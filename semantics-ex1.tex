@@ -1,0 +1,211 @@
+\documentclass[10pt,a4paper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fancyeq}
+\usepackage{tikz}
+%\usepackage{tikz-uml}
+\usepackage{mathpartir}
+\usetikzlibrary{shapes,arrows,backgrounds,positioning}
+\usepackage{graphicx,xcolor}
+\usepackage{geometry}
+\usepackage{everysel}
+
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, black, font=\sffamily\bfseries, draw=black,
+    fill=white, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_r/.style = {treenode, circle, red, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_x/.style = {treenode, rectangle, draw=black,
+    minimum width=0.5em, minimum height=0.5em}% arbre rouge noir, nil
+}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05}         % Palatino needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+
+% some format settings
+% for hard-bound final submission, use:
+%\setlength{\oddsidemargin}{4.6mm}     % 30 mm left margin - 1 in
+% for soft-bound version and techreport, use instead:
+
+\setlength{\oddsidemargin}{-0.4mm}    % 25 mm left margin - 1 in
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{-5.4mm}        % 20 mm top margin - 1 in
+\setlength{\textwidth}{160mm}         % 20/25 mm right margin
+\setlength{\textheight}{237mm}        % 20 mm bottom margin
+\setlength{\headheight}{5mm}
+\setlength{\headsep}{5mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\medskipamount}
+\renewcommand\baselinestretch{1.2} % thesis format (not needed for techreport)
+% don't let large figures hijack entire pages
+\renewcommand\topfraction{.9}
+\renewcommand\textfraction{.1}
+\renewcommand\floatpagefraction{.8}
+
+\pagestyle{headandfoot}
+%\pointsinrightmargin
+%\pointname{ marks}
+%\marginpointname{ marks}
+
+\marksnotpoints 
+
+\definecolor{campurple}{HTML}{862D91} 
+\definecolor{campurpledark}{HTML}{2A185C}
+
+\hypersetup{  
+  urlcolor=campurple,
+  linkcolor=campurple,
+  colorlinks=true  
+}
+
+\titlelabel{\llap{\thetitle\quad}}
+
+\newcommand {\lbrac} {\makebox[0pt]{[\kern-1ex[}}
+\newcommand {\rbrac} {\makebox[0pt]{]\kern-1ex]}}
+\newcommand{\denote}[1]{\lbrac~#1~\rbrac}
+
+
+\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width 0pt} 
+
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+
+
+\begin{document}
+
+\newcommand{\course}{Semantics of Programming Languages}
+\newcommand{\week}{1}
+\newcommand{\topics}{Transition Systems and Types}
+
+\everymath{\color{campurpledark}}
+\everydisplay{\color{campurpledark}}
+
+\vspace{-15pt}
+
+%\begin{center}
+%\emph{Complete SECTION 1 and ONE other section.}
+%\end{center}
+
+%\begin{center}
+%\emph{Answer SECTION 1 and TWO other sections.}
+%\end{center}
+
+\marksnotpoints
+\pointsdroppedatright
+\marksnotpoints
+\marginpointname{ \points}
+
+\begin{center}
+\Large {\color{campurpledark} \course} \\[-0.2cm]
+\LARGE \textbf{\color{campurpledark} Exercise \week: \topics} \\
+\end{center}
+
+{\color{campurple}\hrule}
+
+\vspace{0.5cm}
+
+\begin{questions}
+
+\section*{Transition Systems}
+
+% hutton's razor with extensions
+\question Recall the specification of the compiler for Hutton's Razor in \url{http://www.cl.cam.ac.uk/~mbg28/oop-ex2.pdf} we looked at last year. In Section 2 of the linked PDF, you will see that the behaviour of the instructions of the abstract machine is only described using two bullet points:
+\begin{itemize}
+\item $\mathbf{PUSH}~v$ pushes the value $v$ on top of the stack
+\item $\mathbf{ADD}$ takes two values off the stack, adds them up, and then pushes the result on top of the stack
+\end{itemize}
+These descriptions are informal and could be interpreted incorrectly. However, conveniently we have just learned how to do better! 
+\begin{parts}
+\part[1] Let a \emph{stack} be an element $s$ of $\mathbb{N}^*$ where $\varepsilon$ is the empty stack and sequences of natural numbers represent non-empty stacks. Suggest how \emph{configurations} should be represented in a transition system for the abstract machine described in last year's exercise. \droppoints 
+\part[3] What is included in the set of values for this transition system? Discuss how this compares with the set of values for L1 from the notes. \droppoints 
+\part[4] Give a formal, operational semantics for the abstract machine. \droppoints 
+\part[2] Do there exist configurations which are stuck? If so, give an example. If not, prove it. \droppoints 
+\end{parts}
+\question Suppose that we add two new instructions
+\begin{displaymath}
+\begin{array}{lcl}
+i & = & \ldots \mid \mathbf{LOAD}~\ell \mid \mathbf{STORE}~\ell
+\end{array}
+\end{displaymath}
+where $\mathbf{LOAD}~\ell$ loads a value from a memory location labelled $\ell$ before pushing it on top of the stack and $\mathbf{STORE}~\ell$ pops a value off the stack and stores it in the memory location labelled $\ell$ afterwards. Labels are elements of a set $\mathbb{L}$ and memory locations store elements of $\mathbb{N}$.
+\begin{parts}
+\part[2] Choose an appropriate representation for \emph{stores} and show how the representation of \emph{configurations} needs to be changed to accommodate for them. \droppoints 
+\part[4] Give a new operational semantics for the abstract machine. \droppoints 
+\part[6] Show a complete derivation from an empty stack and empty store for the program 
+\begin{displaymath}
+\mathbf{PUSH}~4; \mathbf{PUSH}~8; \mathbf{STORE}~l; \mathbf{PUSH}~15; \mathbf{ADD}; \mathbf{LOAD}~l; \mathbf{ADD}; \cdot
+\end{displaymath} \droppoints 
+\end{parts}
+
+\section*{Types}
+
+\question A type may be seen as an approximation of the value of the term it is assigned to. For example, if an arbitrary expression $e$ has type $\mathbf{int}$, then we know that after evaluating $e$ we will end up with a \emph{value} of type $\mathbf{int}$. We also know that if \emph{e.g.} a function $f$ expects an argument of type $\mathbf{bool}$, then $e$ is not a suitable argument for it, thus allowing us to catch such errors at compile-time. However, manually annotating expressions with types is cumbersome, so we would like a program to do it for us. Suppose that a programming language whose syntax contains type annotations is stripped of them, then \emph{type inference} (or \emph{type reconstruction}) describes the process of assigning suitable types to the untyped terms of the language to reconstruct the original, annotated terms. 
+
+For this exercise, let us first extend Hutton's Razor with boolean values (elements of $\mathbb{B}$) and conditional expressions:
+\begin{displaymath}
+e = e + e \mid n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbf{if}~e~\mathbf{then}~e~\mathbf{else}~e
+\end{displaymath}
+We define the semantics of this language \emph{denotationally}. That is, instead of using inductively-defined transitions between states of an abstract machine, we define a total, recursive function which maps expressions to some set of values:
+\begin{displaymath}
+\begin{array}{lcl}
+\denote{\cdot} & : & e \to (\mathbb{N} + \mathbb{B})_{\bot}\\
+\denote{n}         & = & \mathbf{inl}~n \\
+\denote{b}         & = & \mathbf{inr}~b \\
+\denote{e_0 + e_1} & = & \left\{ \begin{array}{ll}
+\mathbf{inl}~(x + y) & \text{if } ~\denote{e_0}~ = \mathbf{inl}~x \text{ and } ~\denote{e_1}~ = \mathbf{inl}~y \\
+\bot & \text{otherwise}
+\end{array}  \right.\\
+\denote{\mathbf{if}~e_0~\mathbf{then}~e_1~\mathbf{else}~e_2} & = & \left\{\begin{array}{ll}
+\denote{e_1} & \qquad \quad \; \text{if } ~\denote{e_0}~ = \mathbf{inr}~\mathit{true}\\
+\denote{e_2} & \qquad \quad \; \text{if } ~\denote{e_0}~ = \mathbf{inr}~\mathit{false}\\
+\bot         & \qquad \quad \; \text{otherwise}
+\end{array}\right.
+\end{array}
+\end{displaymath}
+Note that the codomain of $~\denote{\cdot}~$ (\emph{i.e.} the set of values) is $(\mathbb{N} + \mathbb{B})_{\bot}$. $\mathbb{N} + \mathbb{B}$ represents a \emph{tagged union}. Given two sets, $A$ and $B$, the tagged union of the two is defined as:
+\begin{displaymath}
+A + B = \{~\mathbf{inl}~a \mid a \in A~\} \cup \{~\mathbf{inr}~b \mid b \in B~\}
+\end{displaymath}  
+In other words, a tagged union is simply a union where the elements are tagged with either $\mathbf{inl}$ or $\mathbf{inr}$ to indicate which set they originate from.
+
+The subscript $\bot$ indicates that the set is ``lifted''. This simply means that we include $\bot$ (read as \emph{bottom} or \emph{undefined}) in the set. Therefore, we have:
+\begin{displaymath}
+(\mathbb{N} + \mathbb{B})_{\bot} = \set{\bot, \mathbf{inl}~0,\mathbf{inl}~1, \ldots, \mathbf{inr}~\mathit{true}, \mathbf{inr}~\mathit{false}}
+\end{displaymath}
+To summarise, the co-domain of the evaluation function is the set consisting of $\bot$, all natural numbers tagged with $\mathbf{inl}$, and all boolean values tagged with $\mathbf{inr}$. We use $\bot$ in the definition of the evaluation function to indicate failure: \emph{i.e.} things we cannot evaluate. Therefore $\bot$ means that the evaluation got stuck.
+
+According to the grammar for $e$, an example of a valid expression in this language would be the following:
+\begin{displaymath}
+\mathbf{if}~4~\mathbf{then}~\mathit{false}~\mathbf{else}~8
+\end{displaymath}
+This expression does intuitively not make much sense. If we apply the evaluation function, it will evaluate to $\bot$. It gets stuck. In practice, it is not feasible to run a program to find out if it will get stuck or not. To catch such errors at compile-time, we will add a type system to our language. For this, we need to define suitable types. A good start would be one type for each kind of value in our language: 
+\begin{displaymath}
+\tau = \mathbf{nat} \mid \mathbf{bool}
+\end{displaymath}
+We know that a well-formed expression will either evaluate to a natural number or to a boolean value. Since types are approximations of the values of expressions, our definition of $\tau$ seems adequate.
+
+%We now wish to define a binary relation $\vdash e : \tau$ which relates expressions $e$ to types $\tau$. For example, we want to say that all numbers in our language are of type $\mathbf{nat}$: $\vdash n : \mathbf{nat}$. Enumerating all of these relations would be impossible, however, so we declare rules according to which types are assigned different forms of expressions instead. We call this the \emph{deductive system}. Each rule in this system is presented in the following way:
+
+
+%The type inference problem can now be formalised as: given an arbitrary expression $e$, can we assign a type $\tau$ to it such that the typing relation holds:
+%\begin{displaymath}
+%\vdash e : \tau
+%\end{displaymath}
+
+\begin{parts}
+\part[5] Suggest a set of type inference rules to form a deduction system for a typed version of Hutton's Razor with boolean and conditional expressions. \emph{Hint}: both of the branches of a conditional expression should have the same type. \droppoints
+\part[3] Prove using your inference rules that $\mathbf{if}~4~\mathbf{then}~\mathit{false}~\mathbf{else}~8$ is not well-typed. \droppoints 
+\part[6] Turn your deduction system into an algorithm and implement it in a language of your choice. Discuss the difference between a deduction system and a type inference algorithm. \droppoints 
+\part[6] Translate the denotational semantics shown above into an operational semantics. Discuss how your answer compares with the denotational semantics. \droppoints
+\part[6] \emph{Type checking} is a related problem to type inference. It asks: given an expression $e$ and a type $\tau$, is $\tau$ a suitable type for $e$? Show how type checking can be implemented by reducing it to type inference. Explain your answer and any assumptions you make. Think of other inferred languages you know (\emph{e.g.} ML or Haskell), could you do the same there? \droppoints 
+\part[10] Suppose that we want to allow each branch of a conditional expression to return a different type. Discuss how this could be implemented in the type system. Justify your decisions and describe all changes you would make to the types and the typing rules. \droppoints
+\end{parts}
+\end{questions}
+\end{document}
