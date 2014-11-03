@@ -152,6 +152,11 @@ For this exercise, let us first extend Hutton's Razor with boolean values (eleme
 \begin{displaymath}
 e = e + e \mid n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbf{if}~e~\mathbf{then}~e~\mathbf{else}~e
 \end{displaymath}
+Given two sets, $A$ and $B$, the tagged union of the two is defined as:
+\begin{displaymath}
+A + B = \{~\mathbf{inl}~a \mid a \in A~\} \cup \{~\mathbf{inr}~b \mid b \in B~\}
+\end{displaymath}  
+In other words, a tagged union is simply a union where the elements are tagged with either $\mathbf{inl}$ or $\mathbf{inr}$ to indicate which set they originate from.
 We define the semantics of this language \emph{denotationally}. That is, instead of using inductively-defined transitions between states of an abstract machine, we define a total, recursive function which maps expressions to some set of values:
 \begin{displaymath}
 \begin{array}{lcl}
@@ -169,12 +174,7 @@ We define the semantics of this language \emph{denotationally}. That is, instead
 \end{array}\right.
 \end{array}
 \end{displaymath}
-Note that the codomain of $~\denote{\cdot}~$ (\emph{i.e.} the set of values) is $(\mathbb{N} + \mathbb{B})_{\bot}$. $\mathbb{N} + \mathbb{B}$ represents a \emph{tagged union}. Given two sets, $A$ and $B$, the tagged union of the two is defined as:
-\begin{displaymath}
-A + B = \{~\mathbf{inl}~a \mid a \in A~\} \cup \{~\mathbf{inr}~b \mid b \in B~\}
-\end{displaymath}  
-In other words, a tagged union is simply a union where the elements are tagged with either $\mathbf{inl}$ or $\mathbf{inr}$ to indicate which set they originate from.
-
+Note that the codomain of $~\denote{\cdot}~$ (\emph{i.e.} the set of values) is $(\mathbb{N} + \mathbb{B})_{\bot}$. $\mathbb{N} + \mathbb{B}$ represents a \emph{tagged union}.
 The subscript $\bot$ indicates that the set is ``lifted''. This simply means that we include $\bot$ (read as \emph{bottom} or \emph{undefined}) in the set. Therefore, we have:
 \begin{displaymath}
 (\mathbb{N} + \mathbb{B})_{\bot} = \set{\bot, \mathbf{inl}~0,\mathbf{inl}~1, \ldots, \mathbf{inr}~\mathit{true}, \mathbf{inr}~\mathit{false}}
