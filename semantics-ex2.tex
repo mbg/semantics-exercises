@@ -1,0 +1,302 @@
+\documentclass[10pt,a4paper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fancyeq}
+\usepackage{tikz}
+%\usepackage{tikz-uml}
+\usepackage{mathpartir}
+\usetikzlibrary{matrix,decorations.pathmorphing,shapes,arrows,backgrounds,positioning}
+\usepackage{graphicx,xcolor}
+\usepackage{geometry}
+\usepackage{everysel}
+
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, black, font=\sffamily\bfseries, draw=black,
+    fill=white, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_r/.style = {treenode, circle, red, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_x/.style = {treenode, rectangle, draw=black,
+    minimum width=0.5em, minimum height=0.5em}% arbre rouge noir, nil
+}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05}         % Palatino needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+
+% some format settings
+% for hard-bound final submission, use:
+%\setlength{\oddsidemargin}{4.6mm}     % 30 mm left margin - 1 in
+% for soft-bound version and techreport, use instead:
+
+\setlength{\oddsidemargin}{-0.4mm}    % 25 mm left margin - 1 in
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{-5.4mm}        % 20 mm top margin - 1 in
+\setlength{\textwidth}{160mm}         % 20/25 mm right margin
+\setlength{\textheight}{237mm}        % 20 mm bottom margin
+\setlength{\headheight}{5mm}
+\setlength{\headsep}{5mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\medskipamount}
+\renewcommand\baselinestretch{1.2} % thesis format (not needed for techreport)
+% don't let large figures hijack entire pages
+\renewcommand\topfraction{.9}
+\renewcommand\textfraction{.1}
+\renewcommand\floatpagefraction{.8}
+
+\pagestyle{headandfoot}
+%\pointsinrightmargin
+%\pointname{ marks}
+%\marginpointname{ marks}
+
+\marksnotpoints 
+
+\definecolor{campurple}{HTML}{862D91} 
+\definecolor{campurpledark}{HTML}{2A185C}
+
+\hypersetup{  
+  urlcolor=campurple,
+  linkcolor=campurple,
+  colorlinks=true  
+}
+
+\titlelabel{\llap{\thetitle\quad}}
+
+\newcommand {\lbrac} {\makebox[0pt]{[\kern-1ex[}}
+\newcommand {\rbrac} {\makebox[0pt]{]\kern-1ex]}}
+\newcommand{\denote}[1]{\lbrac~#1~\rbrac}
+
+
+\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width 0pt} 
+
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+
+
+\begin{document}
+
+\newcommand{\course}{Semantics of Programming Languages}
+\newcommand{\week}{2}
+\newcommand{\topics}{Induction and Functions}
+
+\everymath{\color{campurpledark}}
+\everydisplay{\color{campurpledark}}
+
+%\vspace{-15pt}
+
+%\begin{center}
+%\emph{Complete SECTION 1 and ONE other section.}
+%\end{center}
+
+%\begin{center}
+%\emph{Answer SECTION 1 and TWO other sections.}
+%\end{center}
+
+\marksnotpoints
+\pointsdroppedatright
+\marksnotpoints
+\marginpointname{ \points}
+
+\begin{center}
+\Large {\color{campurpledark} \course} \\[-0.2cm]
+\LARGE \textbf{\color{campurpledark} Exercise \week: \topics} \\
+\end{center}
+
+{\color{campurple}\hrule}
+
+\newcommand{\metavar}[1]{{\color{campurple}#1}}
+
+\begin{questions}
+
+\section*{Induction}
+
+\question In the previous exercise we have developed formal descriptions of the operational semantics and type inference rules for three simple languages. This allows us to formally prove properties about the behaviour of programs in those languages. 
+\begin{parts}
+\part[10] Below is a model answer for the operational semantics that was required in Question 2 of the last set of exercises:  
+\begin{mathpar}
+\inferrule*[right=E-ADD]{ }
+{\langle \mathbf{ADD}; p, xys, \sigma \rangle \longrightarrow \langle p, (x+y)s, \sigma \rangle} \and
+\inferrule*[right=E-PUSH]{ }
+{\langle \mathbf{PUSH}~v; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \\
+\inferrule*[right=E-LOAD]{ \ell \in \mathit{dom}(\sigma) }
+{\langle \mathbf{LOAD}~\ell; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \and
+\inferrule*[right=E-STORE]{ }
+{\langle \mathbf{STORE}~\ell; p, vs, \sigma \rangle \longrightarrow \langle p, s, \sigma + \set{ \ell \mapsto v } \rangle}
+\end{mathpar}
+Below is a definition of the determinism property for programs in this language:
+\begin{displaymath}
+\begin{array}{lcl}
+\Phi(p) & \overset{\mathit{def}}{=} & \forall s,\sigma,p',s',\sigma',p'',s'',\sigma''.\\ && \quad \langle p,s,\sigma \rangle \longrightarrow \langle p',s',\sigma' \rangle \wedge \langle p,s,\sigma \rangle \longrightarrow \langle p'',s'',\sigma'' \rangle \Rightarrow \\ && \quad \langle p',s',\sigma' \rangle = \langle p'',s'',\sigma'' \rangle
+\end{array}  
+\end{displaymath}
+Prove that $\forall p.\Phi(p)$. \droppoints 
+\part Below is a model answer for the operational semantics and typing judgements which were required in Question 3 of the last set of exercises:
+\begin{mathpar}
+\inferrule*[right=\color{black}E-IF]
+{\metavar{e_0} \longrightarrow \metavar{e'_0}}
+{\mathbf{if}~\metavar{e_0}~\mathbf{then}~{\color{campurple}e_1}~\mathbf{else}~{\color{campurple}e_2} \longrightarrow \mathbf{if}~\metavar{e'_0}~\mathbf{then}~{\color{campurple}e_1}~\mathbf{else}~{\color{campurple}e_2}}\\
+\inferrule*[right=\color{black}E-IF-TRUE]
+{ }
+{\mathbf{if}~\mathit{true}~\mathbf{then}~{\color{campurple}e_1}~\mathbf{else}~{\color{campurple}e_2} \longrightarrow {\color{campurple}e_1}}\and
+\inferrule*[right=\color{black}E-IF-FALSE]
+{ }
+{\mathbf{if}~\mathit{false}~\mathbf{then}~{\color{campurple}e_1}~\mathbf{else}~{\color{campurple}e_2} \longrightarrow {\color{campurple}e_2}}\\
+\inferrule*[right=\color{black}E-PLUS]
+{ \metavar{n} = \metavar{n_0} + \metavar{n_1} }
+{\metavar{n_0} + \metavar{n_1} \longrightarrow \metavar{n}}\and
+\inferrule*[right=\color{black}E-PLUS-LEFT]
+{ \metavar{e_0} \longrightarrow \metavar{e'_0} }
+{\metavar{e_0} + \metavar{e_1} \longrightarrow \metavar{e'_0} + \metavar{e_1}}\and
+\inferrule*[right=\color{black}E-PLUS-RIGHT]
+{ \metavar{e_1} \longrightarrow \metavar{e'_1} }
+{\metavar{n_0} + \metavar{e_1} \longrightarrow \metavar{n_0} + \metavar{e'_1}}
+\end{mathpar}
+\begin{mathpar}
+\inferrule*[right=T-NAT]{ }
+{\vdash n : \mathbf{nat}} \and
+\inferrule*[right=T-BOOL]{ }
+{\vdash n : \mathbf{nat}} \\
+\inferrule*[right=T-PLUS]{ \vdash e_0 : \mathbf{nat} \\ \vdash e_1 : \mathbf{nat} }
+{\vdash e_0 + e_1 : \mathbf{nat}} \and
+\inferrule*[right=T-COND]{ \vdash e_0 : \mathbf{bool} \\ \vdash e_1 : \tau \\ \vdash e_2 : \tau}
+{\vdash \mathbf{if}~e_0~\mathbf{then}~e_1~\mathbf{else}~e_2 : \tau}
+\end{mathpar}
+\begin{subparts}
+\subpart[10] Prove that this language has the determinism property. \droppoints 
+\subpart[10] Prove that this language has the progress property. \droppoints 
+\subpart[10] Prove that this language has the type preservation property. \droppoints 
+\subpart[10] Prove that this language has the safety property. \emph{Hint}: by induction on $\longrightarrow^*$, beginning with the case where evaluation results in a value in one step. \droppoints 
+\subpart[5] People often say that ``well-typed programs do not go wrong''. Discuss what is meant by this with reference to the above properties. \droppoints 
+\end{subparts}
+\end{parts} 
+
+\section*{Functions}
+
+\question The $\color{black}\lambda$-calculus is a formal system used to describe computation using functions. Among other things, it serves as the theoretical foundation for programming languages. Functional programming languages in particular may be seen as just the $\color{black}\lambda$-calculus with a large amount of syntactic sugar. Its syntax is shown below as a context-free grammar:
+\begin{displaymath}
+\begin{array}{lcl}
+e & \to & x \mid \lambda x.e \mid (e~e)
+\end{array}
+\end{displaymath} 
+An expression $e$ is either a variable $x$ from a set of variables $\mathbb{V}$, an abstraction\footnote{\emph{i.e.} a function} which binds a variable $x$ in a sub-expression $e$, or an application of one expression to another. Variables are either \emph{free} or \emph{bound} depending on whether there is an abstraction which binds them in the surrounding scope (\emph{i.e.} further on the left). Formally, the set of free variables of some expression is given by: 
+\begin{displaymath}
+\begin{array}{lcl}
+\mathit{fvs}(x) & = & \set{x} \\
+\mathit{fvs}(\lambda x.e) & = & \mathit{fvs}(e) \setminus \set{x} \\
+\mathit{fvs}(e_0~e_1) & = & \mathit{fvs}(e_0) \cup \mathit{fvs}(e_1)
+\end{array}
+\end{displaymath}
+\begin{parts}
+\part[1] What are the free variables of $\lambda c.\lambda a.\lambda k.\lambda e.(i~(\lambda s.a~l))~(\lambda i.e)$? \droppoints 
+\part Expressions in the $\color{black}\lambda$-calculus are considered equivalent up to renaming. This is known as $\color{black}\alpha$-equivalence, formally:
+\begin{displaymath}
+\begin{array}{lcll}
+\lambda x.e & \underset{\alpha}{\Leftrightarrow} & \lambda y.[x \mapsto y]e & \mathbf{where}~y \not \in \mathit{fvs}(e)
+\end{array}
+\end{displaymath} 
+The semantics are given by a single reduction rule, known as $\color{black}\beta$-reduction:
+\begin{displaymath}
+\begin{array}{lcl}
+(\lambda x.e_0)~e_1 & \underset{\beta}{\Rightarrow} & [x \mapsto e_1]e_0
+\end{array}
+\end{displaymath}
+Substitution is \emph{capture-avoiding}: free variables of an expression which is to be substituted into another need to be renamed if they would otherwise become bound.
+\begin{displaymath}
+\begin{array}{lcl}
+[x \mapsto s]y & = & \left\{ \begin{array}{ll}
+s & \mathbf{if}~x \equiv y\\ 
+y & \mathbf{otherwise}
+\end{array}\right.
+ \\[0cm] 
+[x \mapsto s](e_0~e_1) & = & ([x \mapsto s]e_0)~([x \mapsto s]e_1) \\[0cm]
+ [x \mapsto s](\lambda y.e) & = & \left\{ \begin{array}{ll}
+\lambda y.e & \mathbf{if}~x \equiv y\\ 
+\lambda y.[x \mapsto s]e & \mathbf{if}~x \not \equiv y \wedge y \not \in \mathit{fvs}(s) \\
+\lambda z.[x \mapsto s]([y \mapsto z]e) & \mathbf{if}~x \not \equiv y \wedge y \in \mathit{fvs}(s), \mathbf{where}~z~\text{is fresh}
+\end{array} \right. 
+\end{array}
+\end{displaymath}
+Finally, $\color{black} \eta$-conversion allows us to abstract over part of an expression:
+\begin{displaymath}
+\begin{array}{lcll}
+f & \underset{\eta}{\Leftrightarrow} & \lambda x.f~x & \mathbf{where}~x \not \in \mathit{fvs}(f)
+\end{array}
+\end{displaymath}
+For each of the following pairs of expressions, give step-by-step instructions for how one may be transformed into the other using $\alpha$-equality, $\beta$-reduction, and $\eta$-conversion.
+\begin{subparts}
+\subpart[1] $\lambda x.x$ to $\lambda y.y$ \droppoints 
+\subpart[1] $(\lambda f.f~x)~g$ to $g~y$ \droppoints 
+\subpart[1] $f~x$ to $(\lambda y.f~y)~x$ \droppoints  
+\subpart[1] $(\lambda f.\lambda x.f~(f~x))~(\lambda g.g)~z$ to $\lambda q.p~q$ \droppoints 
+\end{subparts}
+\part[4] Give call-by-value operational semantics for the $\lambda$-calculus. \droppoints 
+\part[2] Give call-by-name operational semantics for the $\lambda$-calculus. \droppoints
+\part Data can be encoded in the $\color{black} \lambda$-calculus using the Church encoding. For example, natural numbers are encoded using repeated function application:
+\begin{displaymath}
+\begin{array}{lcl}
+\mathit{ZERO} & \overset{\mathit{def}}{=} & \lambda s.\lambda z.z \\
+\mathit{ONE} & \overset{\mathit{def}}{=} & \lambda s.\lambda z.s~z \\
+\mathit{TWO} & \overset{\mathit{def}}{=} & \lambda s.\lambda z.s~(s~z) \\
+ & \ldots & 
+\end{array}
+\end{displaymath} 
+\begin{subparts}
+\subpart[2] Give a definition for $\mathit{PLUS}$ which, given two natural numbers in Church encoding, returns the sum. \emph{E.g.} $\mathit{PLUS}~\mathit{ONE}~\mathit{ONE} \underset{\beta}{\Rightarrow}^* \mathit{TWO}$. \droppoints 
+\subpart[2] Give a definition for $\mathit{MUL}$ which, given two natural numbers in Church encoding, returns the product. \emph{E.g.} $\mathit{MUL}~\mathit{TWO}~\mathit{TWO} \underset{\beta}{\Rightarrow}^* \mathit{FOUR}$. \droppoints 
+\end{subparts}
+\part Recursion can be encoded in the $\color{black} \lambda$-calculus using a fixed-point combinator. The most common one is the Y-combinator:
+\begin{displaymath}
+\begin{array}{lcl}
+Y & \overset{\mathit{def}}{=} & \lambda f.(\lambda x.f~(x~x))~(\lambda x.f~(x~x))
+\end{array}
+\end{displaymath}
+Consider the following example. For an arbitrary expression $g$:
+\begin{displaymath}
+\begin{array}{cl}
+\expr{Y~g} 
+\hint{definition of $Y$}
+\expr{(\lambda f.(\lambda x.f~(x~x))~(\lambda x.f~(x~x)))~g}
+\hint{ $\beta$-reduction }
+\expr{(\lambda x.g~(x~x))~(\lambda x.g~(x~x))}
+\hint{ $\beta$-reduction }
+\expr{g~((\lambda x.g~(x~x))~(\lambda x.g~(x~x)))}
+\hint{ $\eta$-conversion }
+\expr{g~((\lambda f.(\lambda x.f~(x~x))~(\lambda x.f~(x~x)))~g)}
+\hint{definition of $Y$}
+\lastexpr{g~(Y~g)} 
+\end{array}
+\end{displaymath}
+Give a definition for $\mathit{INFTY}$ which represents $\infty$ using $Y$. \emph{Hint}: you may first want to define $\mathit{SUCC}$ which, given a single number in Church encoding, adds it to $\mathit{ONE}$. \droppoints 
+\part[2] Part of an expression at which $\beta$-reduction may be applied is called a $\beta$-redex. Using an example, discuss whether $\beta$-reduction will always eventually lead to expressions which do not contain any $\beta$-redexes (this is called \emph{strong normalisation}). \droppoints 
+\end{parts}
+\question The simply-typed $\lambda$-calculus (or $\lambda_{\to}$ for short) is a typed version of the $\lambda$-calculus which adds function types. Types in $\lambda_{\to}$ are defined over some set $B$ of base types as:
+\begin{displaymath}
+\begin{array}{lcl}
+\tau & = & b \in B \mid \tau \to \tau 
+\end{array}
+\end{displaymath}
+The syntax of $\lambda_{\to}$ is presented Church-style with explicit type annotations on abstractions:
+\begin{displaymath}
+\begin{array}{lcl}
+e & = & x \mid \lambda x : \tau.e \mid (e~e)
+\end{array}
+\end{displaymath}
+Note that the syntax is otherwise identical to that of the pure $\lambda$-calculus. $\alpha$-equality, $\beta$-reduction, and $\eta$-expansion work just like they did before.
+\begin{parts}
+\part[6] Suggest appropriate typing judgements for $\lambda_{\to}$. \droppoints
+\part[1] Modify your call-by-value operational semantics for the $\lambda$-calculus so that they can be used with $\lambda_{\to}$. \droppoints 
+\part[10] Prove that call-by-value $\lambda_{\to}$ is deterministic, has the progress property, and preserves types. \droppoints 
+\part[5] Can the $Y$-combinator be typed in $\lambda_{\to}$? Discuss. \droppoints 
+\end{parts}
+% simply typed lambda calculus?
+% DNH?
+% System F?
+% Y combinator?
+
+\end{questions}
+\end{document}
