@@ -1,0 +1,120 @@
+\documentclass[10pt,a4paper]{exam}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fancyeq}
+\usepackage{tikz}
+%\usepackage{tikz-uml}
+\usepackage{mathpartir}
+\usetikzlibrary{matrix,decorations.pathmorphing,shapes,arrows,backgrounds,positioning}
+\usepackage{graphicx,xcolor}
+\usepackage{geometry}
+\usepackage{everysel}
+
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, black, font=\sffamily\bfseries, draw=black,
+    fill=white, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_r/.style = {treenode, circle, red, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_x/.style = {treenode, rectangle, draw=black,
+    minimum width=0.5em, minimum height=0.5em}% arbre rouge noir, nil
+}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05}         % Palatino needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+
+% some format settings
+% for hard-bound final submission, use:
+%\setlength{\oddsidemargin}{4.6mm}     % 30 mm left margin - 1 in
+% for soft-bound version and techreport, use instead:
+
+\setlength{\oddsidemargin}{-0.4mm}    % 25 mm left margin - 1 in
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{-5.4mm}        % 20 mm top margin - 1 in
+\setlength{\textwidth}{160mm}         % 20/25 mm right margin
+\setlength{\textheight}{237mm}        % 20 mm bottom margin
+\setlength{\headheight}{5mm}
+\setlength{\headsep}{5mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\medskipamount}
+\renewcommand\baselinestretch{1.2} % thesis format (not needed for techreport)
+% don't let large figures hijack entire pages
+\renewcommand\topfraction{.9}
+\renewcommand\textfraction{.1}
+\renewcommand\floatpagefraction{.8}
+
+\pagestyle{headandfoot}
+%\pointsinrightmargin
+%\pointname{ marks}
+%\marginpointname{ marks}
+
+\marksnotpoints 
+
+\definecolor{campurple}{HTML}{862D91} 
+\definecolor{campurpledark}{HTML}{2A185C}
+
+\hypersetup{  
+  urlcolor=campurple,
+  linkcolor=campurple,
+  colorlinks=true  
+}
+
+\titlelabel{\llap{\thetitle\quad}}
+
+\newcommand {\lbrac} {\makebox[0pt]{[\kern-1ex[}}
+\newcommand {\rbrac} {\makebox[0pt]{]\kern-1ex]}}
+\newcommand{\denote}[1]{\lbrac~#1~\rbrac}
+
+
+\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width 0pt} 
+
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+
+
+\begin{document}
+
+\newcommand{\course}{Semantics of Programming Languages}
+\newcommand{\week}{2}
+\newcommand{\topics}{Induction and Functions}
+
+\everymath{\color{campurpledark}}
+\everydisplay{\color{campurpledark}}
+
+%\vspace{-15pt}
+
+%\begin{center}
+%\emph{Complete SECTION 1 and ONE other section.}
+%\end{center}
+
+%\begin{center}
+%\emph{Answer SECTION 1 and TWO other sections.}
+%\end{center}
+
+\marksnotpoints
+\pointsdroppedatright
+\marksnotpoints
+\marginpointname{ \points}
+
+\begin{center}
+\Large {\color{campurpledark} \course} \\[-0.2cm]
+\LARGE \textbf{\color{campurpledark} Exercise \week: \topics} \\
+\end{center}
+
+{\color{campurple}\hrule}
+
+\newcommand{\metavar}[1]{{\color{campurple}#1}}
+
+\begin{questions}
+
+\question[100] Draw a picture of a duck
+\question 2014 paper 6 questions 9 and 10
+
+\end{questions}
+\end{document}
