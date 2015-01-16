@@ -120,8 +120,8 @@
 \question You are given the following definition for the abstract syntax of a simplified subset of \sout{Haskell} DNH with \sout{Haskell syntax} improved ML syntax. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
 \begin{displaymath}
 \begin{array}{lcll}
-\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \in \mathbb{D} \mid \tau \to \tau' & \qquad \text{\color{black}types}\\
-\mathit{ctr} & = & C~\tau^*;\quad{C}\in\mathbb{C} & \qquad \text{\color{black}data constructors}\\
+\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \in \mathbb{D} \mid \tau \to \tau & \qquad \text{\color{black}types}\\
+\mathit{ctr} & = & C~\tau^*;\;(C\in\mathbb{C}) & \qquad \text{\color{black}data constructors}\\
 p & = & \mathbf{data}~\mathbb{D} = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}programs}\\
 e & = & v & \qquad \text{\color{black}expressions} \\
 v & = & n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbb{C}~e^* & \qquad \text{\color{black}values}
