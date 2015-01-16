@@ -1,0 +1,234 @@
+\documentclass[10pt,a4paper]{exam} % turn it into a class! 
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fancyeq}
+\usepackage{tikz}
+%\usepackage{tikz-uml}
+\usepackage{mathpartir}
+\usetikzlibrary{matrix,decorations.pathmorphing,shapes,arrows,backgrounds,positioning}
+\usepackage{graphicx,xcolor}
+\usepackage{geometry}
+\usepackage{everysel}
+\usepackage[normalem]{ulem}
+
+\tikzset{
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, black, font=\sffamily\bfseries, draw=black,
+    fill=white, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_r/.style = {treenode, circle, red, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+  arn_x/.style = {treenode, rectangle, draw=black,
+    minimum width=0.5em, minimum height=0.5em}% arbre rouge noir, nil
+}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05}         % Palatino needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+
+% some format settings
+% for hard-bound final submission, use:
+%\setlength{\oddsidemargin}{4.6mm}     % 30 mm left margin - 1 in
+% for soft-bound version and techreport, use instead:
+
+\setlength{\oddsidemargin}{-0.4mm}    % 25 mm left margin - 1 in
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{-5.4mm}        % 20 mm top margin - 1 in
+\setlength{\textwidth}{160mm}         % 20/25 mm right margin
+\setlength{\textheight}{237mm}        % 20 mm bottom margin
+\setlength{\headheight}{5mm}
+\setlength{\headsep}{5mm}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{\medskipamount}
+\renewcommand\baselinestretch{1.2} % thesis format (not needed for techreport)
+% don't let large figures hijack entire pages
+\renewcommand\topfraction{.9}
+\renewcommand\textfraction{.1}
+\renewcommand\floatpagefraction{.8}
+
+\pagestyle{headandfoot}
+%\pointsinrightmargin
+%\pointname{ marks}
+%\marginpointname{ marks}
+
+\marksnotpoints 
+
+\definecolor{campurple}{HTML}{862D91} 
+\definecolor{campurpledark}{HTML}{2A185C}
+
+\hypersetup{  
+  urlcolor=campurple,
+  linkcolor=campurple,
+  colorlinks=true  
+}
+
+\titlelabel{\llap{\thetitle\quad}}
+
+\newcommand {\lbrac} {\makebox[0pt]{[\kern-1ex[}}
+\newcommand {\rbrac} {\makebox[0pt]{]\kern-1ex]}}
+\newcommand{\denote}[1]{\lbrac~#1~\rbrac}
+
+
+\def\mystrut(#1,#2){\vrule height #1pt depth #2pt width 0pt} 
+
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+
+
+\begin{document}
+
+\newcommand{\course}{Semantics of Programming Languages}
+\newcommand{\week}{3}
+\newcommand{\topics}{Data, Subtyping \& Objects, Semantic Equivalence, and Concurrency}
+
+\everymath{\color{campurpledark}}
+\everydisplay{\color{campurpledark}}
+
+%\vspace{15pt}
+
+%\begin{center}
+%\emph{Complete SECTION 1 and ONE other section.}
+%\end{center}
+
+%\begin{center}
+%\emph{Answer SECTION 1 and TWO other sections.}
+%\end{center}
+
+\marksnotpoints
+\pointsdroppedatright
+\marksnotpoints
+\marginpointname{ \points}
+
+\begin{center}
+\LARGE {\textbf{\color{campurpledark} \course} }\\[-0.2cm]
+\Large \color{campurpledark} Exercise \week\\
+\end{center}
+
+{\color{campurple}\hrule}
+
+\newcommand{\metavar}[1]{{\color{campurple}#1}}
+
+\vspace{0.5cm}
+
+\begin{questions}
+
+\section*{Data}
+\question You are given the following definition for the abstract syntax of a simplified subset of \sout{Haskell} DNH with \sout{Haskell syntax} improved ML syntax. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
+\begin{displaymath}
+\begin{array}{lcll}
+\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid \mathbb{D} \mid \tau \to \tau & \qquad \text{\color{black}types}\\
+\mathit{ctr} & = & \mathbb{C}~\tau^*; & \qquad \text{\color{black}data constructors}\\
+p & = & \mathbf{data}~\mathbb{D} = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}programs}\\
+e & = & v & \qquad \text{\color{black}expressions} \\
+v & = & n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbb{C}~e^* & \qquad \text{\color{black}values}
+\end{array}
+\end{displaymath}
+We use postfix, superscript + and * to mean ``one or more'' and ``zero or more'' respectively. For example, valid data constructors might be $\mathit{Unit};$, $\mathit{Boxed}~\mathbf{nat};$ or $\mathit{Pair}~\mathbf{nat}~\mathbf{nat};$ assuming that $\mathit{Unit}$, $\mathit{Boxed}$, and $\mathit{Pair}$ are all elements of $\mathbb{C}$. A valid program may be the following:
+\begin{displaymath}
+\mathbf{data}~\mathit{Instr} = \mathit{ADD};~\mathit{PUSH}~\mathbf{nat};~\mathbf{in}~\mathit{PUSH}~5
+\end{displaymath}
+assuming that $\mathit{Instr} \in \mathbb{D}$ and $\mathit{ADD}, \mathit{PUSH} \in \mathbb{C}$. The operational semantics consist of a relation $\to_p$ for programs. There are currently no rules for a $\to_e$ relation since all expressions are currently values. Data type definitions at the start of a program have no meaning in the operational semantics:
+\begin{mathpar}
+	\inferrule*[right=\color{black}E-DATA]
+	{  }
+	{ \mathbf{data}~D = \overline{C}~\mathbf{in}~p \to_p p } 
+\end{mathpar}
+Note that this language only allows us to define custom data types and to construct values using them or the basic, built-in types. As additional restrictions, we will say that data types may not be recursive and must be defined in the order in which they are used. \emph{I.e.} a data type $\mathit{Foo}$ may be used as a parameter for a constructor in the definition of a data type $\mathit{Bar}$ as long as $\mathit{Foo}$ is defined before $\mathit{Bar}$.
+\begin{parts}
+	\part[6] Specify suitable type inference rules for this language. Data constructors construct values of their respective data type. If they have no parameters, then they are simply values of that type or, if parametrised, then they are curried functions from values of their parameter types to one of their respective data type. \droppoints 
+	\part[2] Suggest how we could lift the restriction that data types must be declared in the order in which they are used. \emph{Hint}: I made you do this for Algorithms \droppoints 
+	\part[6] Suppose we wish to extend this language with case expressions and pattern matching:
+	\begin{displaymath}
+	\begin{array}{lcll}
+	\mathit{option} & = & v \to e & \qquad \text{\color{black}case options}\\
+	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{option}^+ & \qquad \text{\color{black}expressions}
+	\end{array}
+	\end{displaymath}
+	Modify the operational semantics and typing rules accordingly. \droppoints 
+\end{parts}
+
+\section*{Subtyping \& Objects}
+
+\question[10] Extend data types in the language from the previous section with records. It should be possibly to specify labels for the parameters of data constructors and to extract values from records using the labels. For example:
+\begin{displaymath}
+\mathbf{data}~\mathit{Instr} = \mathit{ADD};~\mathit{PUSH}~\{~\mathit{valueToPush} : \mathbf{nat}~\};~\mathbf{in}~\mathit{valueToPush}~(\mathit{PUSH}~5)
+\end{displaymath}
+Show your modified abstract syntax, operational semantics, and typing rules. \droppoints 
+\question[4] Explain the difference between inheritance and subtyping. You are encouraged, but not required, to draw pictures of a bird and a duck to illustrate your answer. \droppoints 
+
+\section*{Semantic Equivalence}
+
+\newcommand{\receive}[2]{#1(#2)}
+\newcommand{\send}[2]{\overline{#1}\langle #2 \rangle}
+\newcommand{\channel}[1]{(\nu #1)}
+
+\question The $\pi$-calculus is a process calculus, \emph{i.e.} a formal system which is used to describe concurrent processes\footnote{You may think of processes here as threads}. In the $\pi$-calculus, processes can communicate with each other via \emph{channels}. The abstract syntax of processes is given below:
+\begin{displaymath}
+\begin{array}{lcl}
+P & \to & \receive{x}{y}.P\\
+  & \mid & \send{x}{y}.P\\
+  & \mid & P \mid P \\
+  & \mid & \channel{x}P\\
+  & \mid & !P\\
+  & \mid & 0
+\end{array}
+\end{displaymath}
+A program of form $\receive{x}{y}.P$ receives on a channel named $x$ and binds the resulting value to $y$ in $P$. $\send{x}{y}.P$ sends a value $y$ over channel $x$ and then continues with $P$. $P \mid Q$ runs $P$ and $Q$ concurrently. $\channel{x}P$ creates a channel named $x$ and then runs $P$. $!P$ repeatedly spawns copies of $P$. $0$ terminates a process. Formally, the reduction semantics of this calculus are:
+\begin{mathpar}
+	\inferrule*[right=\color{black}E-SEND-RECEIVE]
+	{  }
+	{ \send{x}{z}.P \mid \receive{x}{y}.Q \to P \mid [y \mapsto z]Q }\\
+	\inferrule*[right=\color{black}E-CONC]
+	{ P \to Q }
+	{ P \mid R \to Q \mid R }\and
+	\inferrule*[right=\color{black}E-PLUS-RIGHT]
+	{ P \to Q }
+	{ \channel{x}P \to \channel{x}Q }
+\end{mathpar}
+Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this purpose, we can define a function which calculates the free variables of a process:
+\begin{displaymath}
+\begin{array}{lcl}
+\mathit{fvs}(0) & = & \emptyset \\
+\mathit{fvs}(\send{a}{x}.P) & = & \set{a,x} \cup \mathit{fvs}(P) \\
+\mathit{fvs}(\receive{a}{x}.P) & = & \set{a} \cup (\mathit{fvs}(P) \setminus \set{x} ) \\
+\mathit{fvs}(P \mid Q) & = & \mathit{fvs}(P) \cup \mathit{fvs}(Q) \\
+\mathit{fvs}(\channel{a}.P) & = & \mathit{fvs}(P) \setminus \set{a} \\
+\mathit{fvs}(!P) & = & \mathit{fvs}(P)
+\end{array}
+\end{displaymath}
+\begin{parts}
+	\part[6] Give the definition of a function $\mathit{bound}$ which calculates the bound variables of a process. \droppoints 
+	\part[6] Define capture-avoiding substitution for the $\pi$-calculus. \droppoints 
+	\part[2] You may have noticed that the reduction semantics do not include cases for all forms of terms in the $\pi$-calculus. This is not required because it can be addressed by \emph{structural congruence}. We will use $\simeq$ to denote the structural congruence relation. For example, two processes are structurally congruent if they are identical up to $\alpha$-conversion (\emph{i.e.} identical up to structure). Express this fact for two arbitrary processes $P$ and $Q$. \droppoints
+	\part[3] Parallel composition (\emph{e.g.} $P \mid Q$) is commutative, associative, and has a unit. Extend the structural congruence relation $\simeq$ with these three properties. \droppoints 
+	\part Additionally, there are the following axioms:
+	\begin{displaymath}
+	\begin{array}{lcll}
+	\channel{x}\channel{y}P & \simeq & \channel{y}\channel{x}P \\
+	\channel{x}0 & \simeq & 0\\
+	!P & \simeq & P \mid~!P\\
+	\channel{x}(P \mid Q) & \simeq & \channel{x}P \mid Q & \text{if $x \not \in \mathit{fvs}(Q)$}
+	\end{array}
+	\end{displaymath}
+	For each of the following pairs of processes, decide whether they are structurally congruent.
+	\begin{subparts}
+	\subpart[1] $0 \overset{?}{\simeq} \channel{x}0$ \droppoints 
+	\subpart[1] $Q\mid P! \overset{?}{\simeq} P!$ \droppoints 
+	\subpart[1] $\channel{x}\channel{y}(P \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}(Q \mid P \mid \channel{z}0)$ \droppoints
+	\subpart[1] $\channel{x}\channel{y}(\send{y}{i} \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}Q \mid (\send{y}{i} \mid \channel{z}0)$ \droppoints
+	\end{subparts}
+\end{parts}
+
+\section*{Concurrency}
+
+\question[1] Can you give an example of a process which results in deadlock? If not, why? \droppoints
+\question[2] What happens if one process sends on a channel $x$ while two or more other processes are waiting to receive on channel $x$? Use an example process to illustrate your answer. \emph{Hint}: you are allowed to use the structural congruence relation as part of a reduction sequence. \droppoints
+\question[2] Is the $\pi$-calculus deterministic? Illustrate your answer with either a counter-example or a proof. \droppoints 
+\question[5] Discuss how you might go about implementing mutual exclusion in the $\pi$-calculus. \droppoints 
+
+\end{questions}
+\end{document}
