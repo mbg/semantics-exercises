@@ -119,12 +119,20 @@
 \section*{Data}
 \question You are given the following definition for the abstract syntax of a simplified subset of \sout{Haskell} DNH with \sout{Haskell syntax} improved ML syntax. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
 \begin{displaymath}
+\begin{array}{cccc}
+D \in \mathbb{D} &
+C \in \mathbb{C} &
+n \in \mathbb{N} &
+b \in \mathbb{B} 
+\end{array}
+\end{displaymath}
+\begin{displaymath}
 \begin{array}{lcll}
-\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \in \mathbb{D} \mid \tau \to \tau & \qquad \text{\color{black}types}\\
-\mathit{ctr} & = & C~\tau^*; ~ (C\in\mathbb{C}) & \qquad \text{\color{black}data constructors}\\
-p & = & \mathbf{data}~\mathbb{D} = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}programs}\\
+\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \mid \tau \to \tau & \qquad \text{\color{black}types}\\
+\mathit{ctr} & = & C~\tau^*; & \qquad \text{\color{black}data constructors}\\
+p & = & \mathbf{data}~D = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}programs}\\
 e & = & v & \qquad \text{\color{black}expressions} \\
-v & = & n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbb{C}~e^* & \qquad \text{\color{black}values}
+v & = & n \mid b \mid C~v^* & \qquad \text{\color{black}values}
 \end{array}
 \end{displaymath}
 We use postfix, superscript + and * to mean ``one or more'' and ``zero or more'' respectively. For example, valid data constructors might be $\mathit{Unit};$, $\mathit{Boxed}~\mathbf{nat};$ or $\mathit{Pair}~\mathbf{nat}~\mathbf{nat};$ assuming that $\mathit{Unit}$, $\mathit{Boxed}$, and $\mathit{Pair}$ are all elements of $\mathbb{C}$. A valid program may be the following:
@@ -135,16 +143,16 @@ assuming that $\mathit{Instr} \in \mathbb{D}$ and $\mathit{ADD}, \mathit{PUSH} \
 \begin{mathpar}
 	\inferrule*[right=\color{black}E-DATA]
 	{  }
-	{ \mathbf{data}~D = \overline{C}~\mathbf{in}~p \to_p p } 
+	{ \mathbf{data}~D = \overline{C~\overline{\tau}}~\mathbf{in}~p \to_p p } 
 \end{mathpar}
 Note that this language only allows us to define custom data types and to construct values using them or the basic, built-in types. As additional restrictions, we will say that data types may not be recursive and must be defined in the order in which they are used. \emph{I.e.} a data type $\mathit{Foo}$ may be used as a parameter for a constructor in the definition of a data type $\mathit{Bar}$ as long as $\mathit{Foo}$ is defined before $\mathit{Bar}$.
 \begin{parts}
 	\part[6] Specify suitable type inference rules for this language. Data constructors construct values of their respective data type. If they have no parameters, then they are simply values of that type or, if parametrised, then they are curried functions from values of their parameter types to one of their respective data type. \droppoints 
-	\part[2] Suggest how we could lift the restriction that data types must be declared in the order in which they are used. \emph{Hint}: I made you do this for Algorithms \droppoints 
+	\part[2] Suppose that you want to write a pre-processor for your language which takes data type declarations in an arbitrary order and places them in the order in which they are used.  \emph{Hint}: I made you do this for one of the Algorithms exercises. \droppoints 
 	\part[6] Suppose we wish to extend this language with case expressions and pattern matching:
 	\begin{displaymath}
 	\begin{array}{lcll}
-	\mathit{option} & = & v \to e & \qquad \text{\color{black}case options}\\
+	\mathit{option} & = & v \to e \mid \mathbf{default} \to e & \qquad \text{\color{black}case options}\\
 	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{option}^+ & \qquad \text{\color{black}expressions}
 	\end{array}
 	\end{displaymath}
