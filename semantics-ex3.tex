@@ -152,8 +152,9 @@ Note that this language only allows us to define custom data types and to constr
 	\part[6] Suppose we wish to extend this language with case expressions and pattern matching:
 	\begin{displaymath}
 	\begin{array}{lcll}
-	\mathit{option} & = & v \to e \mid \mathbf{default} \to e & \qquad \text{\color{black}case options}\\
-	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{option}^+ & \qquad \text{\color{black}expressions}
+	\mathit{option} & = & v \to e  & \qquad \text{\color{black}case option}\\
+	\mathit{options} & = & \mathit{option};~\mathit{options} \mid \mathbf{default} \to e & \qquad \text{\color{black}case options}\\
+	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{options} & \qquad \text{\color{black}expressions}
 	\end{array}
 	\end{displaymath}
 	Modify the operational semantics and typing rules accordingly. \droppoints 
