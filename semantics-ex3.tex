@@ -226,7 +226,7 @@ Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this 
 	For each of the following pairs of processes, decide whether they are structurally congruent.
 	\begin{subparts}
 	\subpart[1] $0 \overset{?}{\simeq} \channel{x}0$ \droppoints 
-	\subpart[1] $Q\mid P! \overset{?}{\simeq} P!$ \droppoints 
+	\subpart[1] $Q\mid !P \overset{?}{\simeq} !P$ \droppoints 
 	\subpart[1] $\channel{x}\channel{y}(P \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}(Q \mid P \mid \channel{z}0)$ \droppoints
 	\subpart[1] $\channel{x}\channel{y}(\send{y}{i} \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}Q \mid (\send{y}{i} \mid \channel{z}0)$ \droppoints
 	\end{subparts}
@@ -237,7 +237,7 @@ Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this 
 \question[1] Can you give an example of a process which results in deadlock? If not, why? \droppoints
 \question[2] What happens if one process sends on a channel $x$ while two or more other processes are waiting to receive on channel $x$? Use an example process to illustrate your answer. \emph{Hint}: you are allowed to use the structural congruence relation as part of a reduction sequence. \droppoints
 \question[2] Is the $\pi$-calculus deterministic? Illustrate your answer with either a counter-example or a proof. \droppoints 
-\question[5] Discuss how you might go about implementing mutual exclusion in the $\pi$-calculus. \droppoints 
+%\question[5] Discuss how you might go about implementing mutual exclusion in the $\pi$-calculus. \droppoints 
 
 \end{questions}
 \end{document}

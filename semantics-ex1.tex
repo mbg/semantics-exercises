@@ -15,6 +15,7 @@
 \usepackage{geometry}
 \usepackage{everysel}
 
+
 \tikzset{
   treenode/.style = {align=center, inner sep=0pt, text centered,
     font=\sffamily},
@@ -116,14 +117,26 @@
 \section*{Transition Systems}
 
 % hutton's razor with extensions
-\question Recall the specification of the compiler for Hutton's Razor in \url{http://www.cl.cam.ac.uk/~mbg28/oop-ex2.pdf} we looked at last year. In Section 2 of the linked PDF, you will see that the behaviour of the instructions of the abstract machine is only described using two bullet points:
+\question Consider the following grammar for the instruction set of a simple, stack-based abstract machine where $v \in \mathbb{N}$:
+\begin{displaymath}
+\begin{array}{lcl}
+i & \to & \mathbf{PUSH}~v \mid \mathbf{ADD}
+\end{array}
+\end{displaymath}
+Additionally, we specify a grammar for programs. These are simply sequences of instructions where $\cdot$ denotes the empty program and $i;p$ denotes an instruction $i$ followed by a program $p$:
+\begin{displaymath}
+\begin{array}{lcl}
+p & = & \cdot \mid i; p
+\end{array}
+\end{displaymath}
+The operational semantics of the instructions $i$ have been specified informally as:
 \begin{itemize}
 \item $\mathbf{PUSH}~v$ pushes the value $v$ on top of the stack
 \item $\mathbf{ADD}$ takes two values off the stack, adds them up, and then pushes the result on top of the stack
 \end{itemize}
-These descriptions are informal and could be interpreted incorrectly. However, conveniently we have just learned how to do better! 
+These descriptions are informal and could be interpreted incorrectly. Conveniently we have just learned how to better specify operational semantics! 
 \begin{parts}
-\part[1] Let a \emph{stack} be an element $s$ of $\mathbb{N}^*$ where $\varepsilon$ is the empty stack and sequences of natural numbers represent non-empty stacks. Suggest how \emph{configurations} should be represented in a transition system for the abstract machine described in last year's exercise. \droppoints 
+\part[1] Let a \emph{stack} be an element $s$ of $\mathbb{N}^*$ where $\varepsilon$ is the empty stack and sequences of natural numbers represent non-empty stacks. Suggest how \emph{configurations} should be represented in a transition system for the abstract machine described above. \droppoints 
 \part[3] What is included in the set of values for this transition system? Discuss how this compares with the set of values for L1 from the notes. \droppoints 
 \part[4] Give a formal, operational semantics for the abstract machine. \droppoints 
 \part[2] Do there exist configurations which are stuck? If so, give an example. If not, prove it. \droppoints 
@@ -146,13 +159,28 @@ where $\mathbf{LOAD}~\ell$ loads a value from a memory location labelled $\ell$ 
 
 \section*{Types}
 
-\question A type may be seen as an approximation of the value of the term it is assigned to. For example, if an arbitrary expression $e$ has type $\mathbf{int}$, then we know that after evaluating $e$ we will end up with a \emph{value} of type $\mathbf{int}$. We also know that if \emph{e.g.} a function $f$ expects an argument of type $\mathbf{bool}$, then $e$ is not a suitable argument for it, thus allowing us to catch such errors at compile-time. However, manually annotating expressions with types is cumbersome, so we would like a program to do it for us. Suppose that a programming language whose syntax contains type annotations is stripped of them, then \emph{type inference} (or \emph{type reconstruction}) describes the process of assigning suitable types to the untyped terms of the language to reconstruct the original, annotated terms. 
+\question A type may be seen as an approximation of the value of the term it is assigned to. For example, if an arbitrary expression $e$ has type $\mathbf{int}$, then we know that after evaluating $e$ we will end up with a \emph{value} of type $\mathbf{int}$. We also know that if \emph{e.g.} a function $f$ expects an argument of type $\mathbf{bool}$, then $e$ is not a suitable argument for it. Types allow us to catch many different classes of errors at compile-time. 
+%However, manually annotating expressions with types is cumbersome, so we would like a program to do it for us. Suppose that a programming language whose syntax contains type annotations is stripped of them, then \emph{type inference} (or \emph{type reconstruction}) describes the process of assigning suitable types to the untyped terms of the language to reconstruct the original, annotated terms. 
 
-For this exercise, let us first extend Hutton's Razor with boolean values (elements of $\mathbb{B}$) and conditional expressions:
+For this exercise, consider the following specification for a simple expression language. $n \in \mathbb{N}$ and $b \in \mathbb{B}$:
 \begin{displaymath}
-e = e + e \mid n \in \mathbb{N} \mid b \in \mathbb{B} \mid \mathbf{if}~e~\mathbf{then}~e~\mathbf{else}~e
+e = e + e \mid n \mid b \mid \mathbf{if}~e~\mathbf{then}~e~\mathbf{else}~e
 \end{displaymath}
-We define the semantics of this language \emph{denotationally}. That is, instead of using inductively-defined transitions between states of an abstract machine, we define a total, recursive function which maps expressions to some set of values:
+We define the semantics of this language \emph{denotationally}\footnote{There is an entire Part II course dedicated to this, but we will keep it simple.}. That is, instead of using inductively-defined transitions between states of an abstract machine, we define a total, recursive function which maps expressions to some set of values.
+
+Before we define a denotational semantics for the above expression language, let us briefly define some prerequisite concepts. Given two arbitrary sets, $A$ and $B$, the \emph{tagged union} of the two is defined as:
+\begin{displaymath}
+A + B = \{~\mathbf{inl}~a \mid a \in A~\} \cup \{~\mathbf{inr}~b \mid b \in B~\}
+\end{displaymath}  
+In other words, a tagged union is simply a union where the elements are tagged with either $\mathbf{inl}$ or $\mathbf{inr}$ to indicate which set they originate from.
+
+A subscript $\bot$ indicates that a set is ``lifted''. This means that we include a value $\bot$ (read as \emph{bottom} or \emph{undefined}) in the set. For example:
+\begin{displaymath}
+\begin{array}{lcl}
+\mathbb{B}_{\bot} & = & \{~\bot, \mathit{true}, \mathit{false}~\}
+\end{array}
+\end{displaymath}
+Now we can define the denotational semantics for our expression language as:
 \begin{displaymath}
 \begin{array}{lcl}
 \denote{\cdot} & : & e \to (\mathbb{N} + \mathbb{B})_{\bot}\\
@@ -169,19 +197,13 @@ We define the semantics of this language \emph{denotationally}. That is, instead
 \end{array}\right.
 \end{array}
 \end{displaymath}
-Note that the codomain of $~\denote{\cdot}~$ (\emph{i.e.} the set of values) is $(\mathbb{N} + \mathbb{B})_{\bot}$. $\mathbb{N} + \mathbb{B}$ represents a \emph{tagged union}. Given two sets, $A$ and $B$, the tagged union of the two is defined as:
-\begin{displaymath}
-A + B = \{~\mathbf{inl}~a \mid a \in A~\} \cup \{~\mathbf{inr}~b \mid b \in B~\}
-\end{displaymath}  
-In other words, a tagged union is simply a union where the elements are tagged with either $\mathbf{inl}$ or $\mathbf{inr}$ to indicate which set they originate from.
-
-The subscript $\bot$ indicates that the set is ``lifted''. This simply means that we include $\bot$ (read as \emph{bottom} or \emph{undefined}) in the set. Therefore, we have:
+Note that the codomain (\emph{i.e.} the set of values) of the evaluation function $~\denote{\cdot}~$ is $(\mathbb{N} + \mathbb{B})_{\bot}$. Therefore, we have:
 \begin{displaymath}
 (\mathbb{N} + \mathbb{B})_{\bot} = \set{\bot, \mathbf{inl}~0,\mathbf{inl}~1, \ldots, \mathbf{inr}~\mathit{true}, \mathbf{inr}~\mathit{false}}
 \end{displaymath}
-To summarise, the co-domain of the evaluation function is the set consisting of $\bot$, all natural numbers tagged with $\mathbf{inl}$, and all boolean values tagged with $\mathbf{inr}$. We use $\bot$ in the definition of the evaluation function to indicate failure: \emph{i.e.} things we cannot evaluate. Therefore $\bot$ means that the evaluation got stuck.
+To summarise, the co-domain of the evaluation function is the set consisting of $\bot$, all natural numbers tagged with $\mathbf{inl}$, and all boolean values tagged with $\mathbf{inr}$. We use $\bot$ in the definition of the evaluation function to indicate failure: \emph{i.e.} things we cannot evaluate. In other words, $\bot$ means that the evaluation got stuck.
 
-According to the grammar for $e$, an example of a valid expression in this language would be the following:
+According to the grammar for $e$, an example of a valid expression would be the following:
 \begin{displaymath}
 \mathbf{if}~4~\mathbf{then}~\mathit{false}~\mathbf{else}~8
 \end{displaymath}
@@ -198,14 +220,32 @@ We know that a well-formed expression will either evaluate to a natural number o
 %\begin{displaymath}
 %\vdash e : \tau
 %\end{displaymath}
-
+\newcommand{\metavar}[1]{{\color{campurple}#1}}
 \begin{parts}
-\part[5] Suggest a set of type inference rules to form a deduction system for a typed version of Hutton's Razor with boolean and conditional expressions. \emph{Hint}: both of the branches of a conditional expression should have the same type. \droppoints
-\part[3] Prove using your inference rules that $\mathbf{if}~4~\mathbf{then}~\mathit{false}~\mathbf{else}~8$ is not well-typed. \droppoints 
-\part[6] Turn your deduction system into an algorithm and implement it in a language of your choice. Discuss the difference between a deduction system and a type inference algorithm. \droppoints 
+\part[5] Define a binary typing relation $ \vdash e : \tau$ for our simple expression language using a system of type inference rules of form:
+\begin{mathpar}
+    \inferrule*[right=\color{black}T-NAME]
+    { assumption_0 \\ \ldots \\ assumption_n }
+    { goal }\\
+\end{mathpar}
+\emph{Hint}: both of the branches of a conditional expression should have the same type. \droppoints
+\part[3] Prove using your inference rules that $\mathbf{if}~\mathit{true}~\mathbf{then}~(4+8)~\mathbf{else}~23$ is well-typed. \droppoints 
+\part[2] Explain why $\mathbf{if}~4~\mathbf{then}~\mathit{false}~\mathbf{else}~8$
+cannot be well-typed. \droppoints 
+\part There are two problems which we typically need to solve for the type system of a programming language:
+\begin{itemize}
+    \item Given some expression $e$ and a type $\tau$, \emph{type checking} asks: is $\tau$ a suitable type for $e$?
+    \item Given only some expression $e$, \emph{type inference} asks: what is a suitable type $\tau$ for $e$?
+\end{itemize} 
+Answer the following questions about type checking and type inference: 
+\begin{subparts}
+\subpart[4] Discuss to what extent your typing judgements address these problems. \droppoints
+\subpart[4] Suggest how the problem of type checking could be reduced to type inference. What assumptions do you need to make about your types? \droppoints  
+\end{subparts} 
+\part[6] Turn your typing judgements into an algorithm for type inference and implement it in a language of your choice, but not ML\footnote{Last year I received some particularly elegant solutions in Haskell and Prolog.}. \droppoints 
 \part[6] Translate the denotational semantics shown above into an operational semantics. Discuss how your answer compares with the denotational semantics. \droppoints
-\part[6] \emph{Type checking} is a related problem to type inference. It asks: given an expression $e$ and a type $\tau$, is $\tau$ a suitable type for $e$? Show how type checking can be implemented by reducing it to type inference. Explain your answer and any assumptions you make. Think of other inferred languages you know (\emph{e.g.} ML or Haskell), could you do the same there? \droppoints 
 \part[10] Suppose that we want to allow each branch of a conditional expression to return a different type. Discuss how this could be implemented in the type system. Justify your decisions and describe all changes you would make to the types and the typing rules. \droppoints
+\part[10] Can you come up with a type system for which type inference is undecidable, but type checking is decidable? This question is particularly difficult and you should not spend too much time on it. \droppoints 
 \end{parts}
 \end{questions}
 \end{document}
