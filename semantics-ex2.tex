@@ -14,6 +14,7 @@
 \usepackage{graphicx,xcolor}
 \usepackage{geometry}
 \usepackage{everysel}
+\usepackage{amsthm}
 
 \tikzset{
   treenode/.style = {align=center, inner sep=0pt, text centered,
@@ -111,30 +112,28 @@
 
 \newcommand{\metavar}[1]{{\color{campurple}#1}}
 
+\theoremstyle{definition}
+\newtheorem{mydef}{Definition}
+
 \begin{questions}
 
 \section*{Induction}
 
-\question In the previous exercise we have developed formal descriptions of the operational semantics and type inference rules for three simple languages. This allows us to formally prove properties about the behaviour of programs in those languages. 
+\question For the previous supervision, we developed formal descriptions of the operational semantics and type inference rules of some simple programming languages. Such formal specifications allow us to prove properties about the behaviour of programs which are written in those languages. 
 \begin{parts}
-\part[10] Below is a model answer for the operational semantics that was required in Question 2 of the last set of exercises:  
-\begin{mathpar}
-\inferrule*[right=E-ADD]{ }
-{\langle \mathbf{ADD}; p, xys, \sigma \rangle \longrightarrow \langle p, (x+y)s, \sigma \rangle} \and
-\inferrule*[right=E-PUSH]{ }
-{\langle \mathbf{PUSH}~v; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \\
-\inferrule*[right=E-LOAD]{ \ell \in \mathit{dom}(\sigma) }
-{\langle \mathbf{LOAD}~\ell; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \and
-\inferrule*[right=E-STORE]{ }
-{\langle \mathbf{STORE}~\ell; p, vs, \sigma \rangle \longrightarrow \langle p, s, \sigma + \set{ \ell \mapsto v } \rangle}
-\end{mathpar}
-Below is a definition of the determinism property for programs in this language:
-\begin{displaymath}
-\begin{array}{lcl}
-\Phi(p) & \overset{\mathit{def}}{=} & \forall s,\sigma,p',s',\sigma',p'',s'',\sigma''.\\ && \quad \langle p,s,\sigma \rangle \longrightarrow \langle p',s',\sigma' \rangle \wedge \langle p,s,\sigma \rangle \longrightarrow \langle p'',s'',\sigma'' \rangle \Rightarrow \\ && \quad \langle p',s',\sigma' \rangle = \langle p'',s'',\sigma'' \rangle
-\end{array}  
-\end{displaymath}
-Prove that $\forall p.\Phi(p)$. \droppoints 
+%\part[10] Below is a model answer for the operational semantics that was required in Question 2 of the last set of exercises:  
+%\begin{mathpar}
+%\inferrule*[right=E-ADD]{ }
+%{\langle \mathbf{ADD}; p, xys, \sigma \rangle \longrightarrow \langle p, (x+y)s, \sigma \rangle} \and
+%\inferrule*[right=E-PUSH]{ }
+%{\langle \mathbf{PUSH}~v; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \\
+%\inferrule*[right=E-LOAD]{ \ell \in \mathit{dom}(\sigma) }
+%{\langle \mathbf{LOAD}~\ell; p, s, \sigma \rangle \longrightarrow \langle p, vs, \sigma \rangle} \and
+%\inferrule*[right=E-STORE]{ }
+%{\langle \mathbf{STORE}~\ell; p, vs, \sigma \rangle \longrightarrow \langle p, s, \sigma + \set{ \ell \mapsto v } \rangle}
+%\end{mathpar}
+%Below is a definition of the determinism property for programs in this language:
+% \droppoints 
 \part Below is a model answer for the operational semantics and typing judgements which were required in Question 3 of the last set of exercises:
 \begin{mathpar}
 \inferrule*[right=\color{black}E-IF]
@@ -167,23 +166,47 @@ Prove that $\forall p.\Phi(p)$. \droppoints
 {\vdash \mathbf{if}~e_0~\mathbf{then}~e_1~\mathbf{else}~e_2 : \tau}
 \end{mathpar}
 \begin{subparts}
-\subpart[10] Prove that this language has the determinism property. \droppoints 
-\subpart[10] Prove that this language has the progress property. \droppoints 
-\subpart[10] Prove that this language has the type preservation property. \droppoints 
-\subpart[10] Prove that this language has the safety property. \emph{Hint}: by induction on $\longrightarrow^*$, beginning with the case where evaluation results in a value in one step. \droppoints 
+\subpart[8] The operational semantics for this language are deterministic if there is no more than one possible reduction for every configuration:
+\begin{displaymath}
+\begin{array}{lcl}
+\Phi(e) & \overset{\mathit{def}}{=} & \forall e',e''.  e  \longrightarrow  e'  \wedge  e  \longrightarrow  e''  \Rightarrow  e'  =  e'' 
+\end{array}  
+\end{displaymath}
+Prove, either by hand in as much detail as you deem necessary or using a proof assistant of your choice, that $\forall e.\Phi(e)$. \droppoints 
+\subpart[8] The type system for this language has the progress property if every well-typed term is either a value or can be reduced further:
+\begin{displaymath}
+\begin{array}{lcl}
+\Phi(e, \tau) & \overset{\mathit{def}}{=} & \vdash e : \tau \Rightarrow e \in \mathbb{V} \vee \exists e'. e  \longrightarrow  e' 
+\end{array}
+\end{displaymath}
+where $\mathbb{V}$ is the set of values. Prove that this property holds. \droppoints 
+\subpart[8] The type system for this language has the preservation property if the every well-typed term which is not a value maintains its type after further reduction:
+\begin{displaymath}
+\begin{array}{lclcl}
+\Phi(e,\tau,e') & \overset{\mathit{def}}{=} & \vdash e : \tau \wedge e \longrightarrow e' & \Rightarrow & \vdash e' : \tau 
+\end{array}
+\end{displaymath}
+Prove that this language has the type preservation property. \droppoints 
+\subpart[8] This language is safe if reducing a well-typed term by an arbitrary number of steps either results in a value or a term which can be reduced further:
+\begin{displaymath}
+\begin{array}{lclcl}
+\Phi(e,\tau,e') & \overset{\mathit{def}}{=} & \vdash e : \tau \wedge e \longrightarrow^* e' & \Rightarrow & e' \in \mathbb{V} \vee \exists e''.e' \longrightarrow e''
+\end{array} 
+\end{displaymath}
+Prove that this property holds. \emph{Hint}: by induction on $\longrightarrow^*$, beginning with the case where evaluation results in a value in one step. \droppoints 
 \subpart[5] People often say that ``well-typed programs do not go wrong''. Discuss what is meant by this with reference to the above properties. \droppoints 
 \end{subparts}
 \end{parts} 
 
 \section*{Functions}
 
-\question The $\color{black}\lambda$-calculus is a formal system used to describe computation using functions. Among other things, it serves as the theoretical foundation for programming languages. Functional programming languages in particular may be seen as just the $\color{black}\lambda$-calculus with a large amount of syntactic sugar. Its syntax is shown below as a context-free grammar:
+\question The $\color{black}\lambda$-calculus is a formal system in which computation is described using functions and substitution. Among other things, it serves as the theoretical foundation for programming languages. Functional programming languages in particular may be seen as just the $\color{black}\lambda$-calculus with a large amount of syntactic sugar. The syntax of the $\lambda$-calculus is shown below as a context-free grammar:
 \begin{displaymath}
 \begin{array}{lcl}
-e & \to & x \mid \lambda x.e \mid (e~e)
+e & \to & x \mid \lambda x.e \mid e~e
 \end{array}
 \end{displaymath} 
-An expression $e$ is either a variable $x$ from a set of variables $\mathbb{V}$, an abstraction\footnote{\emph{i.e.} a function} which binds a variable $x$ in a sub-expression $e$, or an application of one expression to another. Variables are either \emph{free} or \emph{bound} depending on whether there is an abstraction which binds them in the surrounding scope (\emph{i.e.} further on the left). Formally, the set of free variables of some expression is given by: 
+An expression $e$ is either a variable $x$ from a set of variables $\mathbb{V}$, an abstraction\footnote{\emph{i.e.} a function} which binds a variable $x$ in a sub-expression $e$, or an application of one expression to another. Note that function application is left associative. Variables are either \emph{free} or \emph{bound} depending on whether there is an abstraction which binds them in the surrounding scope (\emph{i.e.} further on the left). Formally, the set of free variables of some expression is given by: 
 \begin{displaymath}
 \begin{array}{lcl}
 \mathit{fvs}(x) & = & \set{x} \\
@@ -193,7 +216,7 @@ An expression $e$ is either a variable $x$ from a set of variables $\mathbb{V}$,
 \end{displaymath}
 \begin{parts}
 \part[1] What are the free variables of $\lambda c.\lambda a.\lambda k.\lambda e.(i~(\lambda s.a~l))~(\lambda i.e)$? \droppoints 
-\part Expressions in the $\color{black}\lambda$-calculus are considered equivalent up to renaming. This is known as $\color{black}\alpha$-equivalence, formally:
+\part Expressions in the $\color{black}\lambda$-calculus are considered equivalent up to renaming. This is known as $\color{black}\alpha$-equivalence. Formally:
 \begin{displaymath}
 \begin{array}{lcll}
 \lambda x.e & \underset{\alpha}{\Leftrightarrow} & \lambda y.[x \mapsto y]e & \mathbf{where}~y \not \in \mathit{fvs}(e)
@@ -230,7 +253,7 @@ f & \underset{\eta}{\Leftrightarrow} & \lambda x.f~x & \mathbf{where}~x \not \in
 For each of the following pairs of expressions, give step-by-step instructions for how one may be transformed into the other using $\alpha$-equality, $\beta$-reduction, and $\eta$-conversion.
 \begin{subparts}
 \subpart[1] $\lambda x.x$ to $\lambda y.y$ \droppoints 
-\subpart[1] $(\lambda f.f~x)~g$ to $g~y$ \droppoints 
+\subpart[1] $\lambda x.(\lambda f.f~x)~g$ to $\lambda y.g~y$ \droppoints 
 \subpart[1] $f~x$ to $(\lambda y.f~y)~x$ \droppoints  
 \subpart[1] $(\lambda f.\lambda x.f~(f~x))~(\lambda g.g)~z$ to $\lambda q.p~q$ \droppoints 
 \end{subparts}
@@ -272,26 +295,34 @@ Consider the following example. For an arbitrary expression $g$:
 \end{array}
 \end{displaymath}
 Give a definition for $\mathit{INFTY}$ which represents $\infty$ using $Y$. \emph{Hint}: you may first want to define $\mathit{SUCC}$ which, given a single number in Church encoding, adds it to $\mathit{ONE}$. \droppoints 
-\part[2] Part of an expression at which $\beta$-reduction may be applied is called a $\beta$-redex. Using an example, discuss whether $\beta$-reduction will always eventually lead to expressions which do not contain any $\beta$-redexes (this is called \emph{strong normalisation}). \droppoints 
+\part[2] A formal system is \emph{strongly normalising} if and only if reducing a term will eventually lead to a term which cannot be reduced any further. In the $\lambda$-calculus, we refer to a part of an expression at which $\beta$-reduction may be applied as a $\beta$-redex.
+\begin{displaymath}
+\lambda y.(\lambda x.x)~y
+\end{displaymath}
+In the above expression, $(\lambda x.x)~y$ is a $\beta$-redex since it can be reduced to just $y$ using $\beta$-reduction. Using an example, discuss whether $\beta$-reduction will always eventually lead to expressions which do not contain any $\beta$-redexes. \droppoints 
 \end{parts}
+
+% simply-typed lambda calculus
+
 \question The simply-typed $\lambda$-calculus (or $\lambda_{\to}$ for short) is a typed version of the $\lambda$-calculus which adds function types. Types in $\lambda_{\to}$ are defined over some set $B$ of base types as:
 \begin{displaymath}
 \begin{array}{lcl}
 \tau & = & b \in B \mid \tau \to \tau 
 \end{array}
 \end{displaymath}
-The syntax of $\lambda_{\to}$ is presented Church-style with explicit type annotations on abstractions:
+The syntax of $\lambda_{\to}$ is presented in Church-style with explicit type annotations on abstractions:
 \begin{displaymath}
 \begin{array}{lcl}
-e & = & x \mid \lambda x : \tau.e \mid (e~e)
+e & = & x \mid \lambda x : \tau.e \mid e~e
 \end{array}
 \end{displaymath}
 Note that the syntax is otherwise identical to that of the pure $\lambda$-calculus. $\alpha$-equality, $\beta$-reduction, and $\eta$-expansion work just like they did before.
 \begin{parts}
 \part[6] Suggest appropriate typing judgements for $\lambda_{\to}$. \droppoints
 \part[1] Modify your call-by-value operational semantics for the $\lambda$-calculus so that they can be used with $\lambda_{\to}$. \droppoints 
-\part[10] Prove that call-by-value $\lambda_{\to}$ is deterministic, has the progress property, and preserves types. \droppoints 
-\part[5] Can the $Y$-combinator be typed in $\lambda_{\to}$? Discuss. \droppoints 
+%\part[10] Prove that call-by-value $\lambda_{\to}$ is deterministic, has the progress property, and preserves types. \droppoints 
+\part[5] Can the $Y$-combinator be typed in $\lambda_{\to}$? If so, show its type. If not, explain why. \droppoints 
+\part[6] Annotating abstractions with types is tedious. Instead, we want to use the same terms as for the pure $\lambda$-calculus, \emph{i.e.} those without type annotations in abstractions, but we also want to be able to infer $\lambda_{\to}$ types for those terms. Discuss how you would implement a type inference algorithm which takes terms from the pure $\lambda$-calculus and returns $\lambda_{\to}$ types.  \droppoints 
 \end{parts}
 % simply typed lambda calculus?
 % DNH?
