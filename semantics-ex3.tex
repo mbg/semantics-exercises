@@ -82,7 +82,7 @@
 \begin{document}
 
 \newcommand{\course}{Semantics of Programming Languages}
-\newcommand{\week}{3}
+\newcommand{\week}{III}
 \newcommand{\topics}{Data, Subtyping \& Objects, Semantic Equivalence, and Concurrency}
 
 \everymath{\color{campurpledark}}
@@ -117,7 +117,7 @@
 \begin{questions}
 
 \section*{Data}
-\question You are given the following definition for the abstract syntax of a simplified subset of \sout{Haskell} DNH with \sout{Haskell syntax} improved ML syntax. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
+\question You are given the following definition for the abstract syntax of a small, functional programming language with data types. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
 \begin{displaymath}
 \begin{array}{cccc}
 D \in \mathbb{D} &
@@ -128,33 +128,54 @@ b \in \mathbb{B}
 \end{displaymath}
 \begin{displaymath}
 \begin{array}{lcll}
-\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \mid \tau \to \tau & \qquad \text{\color{black}types}\\
-\mathit{ctr} & = & C~\tau^*; & \qquad \text{\color{black}data constructors}\\
-p & = & \mathbf{data}~D = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}programs}\\
-e & = & v & \qquad \text{\color{black}expressions} \\
-v & = & n \mid b \mid C~v^* & \qquad \text{\color{black}values}
+\tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \mid \tau \to \tau & \qquad \text{\color{black}Types}\\
+\mathit{ctr} & = & C~\tau^*; & \qquad \text{\color{black}Data constructors}\\
+p & = & \mathbf{data}~D = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}Programs}\\
+e & = & \lambda x : \tau.e \mid e~e \mid x \mid l & \qquad \text{\color{black}Expressions} \\
+l & = & n \mid b \mid C~e^* & \qquad \text{\color{black}Literals}
 \end{array}
 \end{displaymath}
-We use postfix, superscript + and * to mean ``one or more'' and ``zero or more'' respectively. For example, valid data constructors might be $\mathit{Unit};$, $\mathit{Boxed}~\mathbf{nat};$ or $\mathit{Pair}~\mathbf{nat}~\mathbf{nat};$ assuming that $\mathit{Unit}$, $\mathit{Boxed}$, and $\mathit{Pair}$ are all elements of $\mathbb{C}$. A valid program may be the following:
+We use postfix, superscript + and * to mean ``one or more'' and ``zero or more'' respectively. For example, valid data constructors are:
+\begin{itemize}
+    \item $\mathit{Unit};$
+    \item $\mathit{Boxed}~\mathbf{nat};$
+    \item $\mathit{Pair}~\mathbf{nat}~\mathbf{nat};$
+\end{itemize}
+$\mathit{Unit}$, $\mathit{Boxed}$, and $\mathit{Pair}$ are all elements of $\mathbb{C}$. For consistency, we assume that all words in the language corresponding to the regular expression $[\texttt{A-Z}][\texttt{a-zA-Z}]^*$ are in $\mathbb{C}$. We use the same convention for elements of $\mathbb{D}$. For variables, we use elements of the language corresponding to $[\texttt{a-z}][\texttt{a-zA-Z}]^*$.
+
+An example of a valid program in this language is
 \begin{displaymath}
 \mathbf{data}~\mathit{Instr} = \mathit{ADD};~\mathit{PUSH}~\mathbf{nat};~\mathbf{in}~\mathit{PUSH}~5
 \end{displaymath}
-assuming that $\mathit{Instr} \in \mathbb{D}$ and $\mathit{ADD}, \mathit{PUSH} \in \mathbb{C}$. The operational semantics consist of a relation $\to_p$ for programs. There are currently no rules for a $\to_e$ relation since all expressions are currently values. Data type definitions at the start of a program have no meaning in the operational semantics:
+where $\mathit{Instr} \in \mathbb{D}$ and $\mathit{ADD}, \mathit{PUSH} \in \mathbb{C}$. This program evaluates to $\mathit{PUSH}~5$.
+
+The operational semantics consist of a relation $\longrightarrow_p$ for programs, and a relation $\longrightarrow_e$ for expressions. Configurations are either just programs for $\longrightarrow_p$ or just expressions for $\longrightarrow_e$. Data type definitions at the start of a program are ignored in the operational semantics:
 \begin{mathpar}
 	\inferrule*[right=\color{black}E-DATA]
 	{  }
-	{ \mathbf{data}~D = \overline{C~\overline{\tau}}~\mathbf{in}~p \to_p p } 
+	{ \mathbf{data}~D = \overline{C~\overline{\tau}}~\mathbf{in}~p \longrightarrow_p p } 
 \end{mathpar}
-Note that this language only allows us to define custom data types and to construct values using them or the basic, built-in types. As additional restrictions, we will say that data types may not be recursive and must be defined in the order in which they are used. \emph{I.e.} a data type $\mathit{Foo}$ may be used as a parameter for a constructor in the definition of a data type $\mathit{Bar}$ as long as $\mathit{Foo}$ is defined before $\mathit{Bar}$.
+%Note that this language only allows us to define custom data types and to construct values using them or the basic, built-in types. 
+We impose the following restrictions on data types: data types may not be recursive and must be defined in the order in which they are used. \emph{I.e.} a data type $\mathit{Foo}$ may be used as a parameter for a constructor in the definition of a data type $\mathit{Bar}$ as long as $\mathit{Foo}$ is defined before $\mathit{Bar}$. This prevents mutually recursive data types.
 \begin{parts}
-	\part[6] Specify suitable type inference rules for this language. Data constructors construct values of their respective data type. If they have no parameters, then they are simply values of that type or, if parametrised, then they are curried functions from values of their parameter types to one of their respective data type. \droppoints 
-	\part[2] Suppose that you want to write a pre-processor for your language which takes data type declarations in an arbitrary order and places them in the order in which they are used.  \emph{Hint}: I made you do this for one of the Algorithms exercises. \droppoints 
+    \part[6] Complete the operational semantics for this language by extending $\longrightarrow_p$ and $\longrightarrow_e$ with suitable transition rules. \droppoints 
+	\part[6] Specify suitable typing rules for this language. Data constructors construct values of their respective data type. If they have no parameters, then they are simply values of that type or, if parametrised, then they are \emph{curried} functions from values of their parameter types to one of their respective data type. For example: $\mathit{ADD} : \mathit{Instr}$ and $\mathit{PUSH} : \mathbf{nat} \to \mathit{Instr}$. \droppoints 
+	\part[2] Suppose that you want to write a pre-processor for your language which takes data type declarations in an \emph{arbitrary} order and re-orders them in order of dependency to fulfil the restriction stated above. For example, if the pre-processor is given
+    \begin{displaymath}
+    \mathbf{data}~\mathit{Foo} = \mathit{MkFoo}~\mathit{Bar};~ \mathbf{in}~\mathbf{data}~\mathit{Bar} = \mathit{MkBar};~\mathbf{in}~p
+    \end{displaymath}
+    then it should return
+    \begin{displaymath}
+    \mathbf{data}~\mathit{Bar} = \mathit{MkBar};~\mathbf{in}~\mathbf{data}~\mathit{Foo} = \mathit{MkFoo}~\mathit{Bar};~ \mathbf{in}~p
+    \end{displaymath}
+    since the definition of $\mathit{Foo}$ depends on $\mathit{Bar}$. Propose an algorithm for this purpose.
+    \emph{Hint}: Think back to Part 1A Algorithms. \droppoints 
 	\part[6] Suppose we wish to extend this language with case expressions and pattern matching:
 	\begin{displaymath}
 	\begin{array}{lcll}
-	\mathit{option} & = & v \to e  & \qquad \text{\color{black}case option}\\
-	\mathit{options} & = & \mathit{option};~\mathit{options} \mid \mathbf{default} \to e & \qquad \text{\color{black}case options}\\
-	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{options} & \qquad \text{\color{black}expressions}
+	\mathit{option} & = & v \to e  & \qquad \text{\color{black}Case option}\\
+	\mathit{options} & = & \mathit{option};~\mathit{options} \mid \mathbf{default} \to e & \qquad \text{\color{black}Case options}\\
+	\mathit{e} & = & \ldots \mid \mathbf{case}~e~\mathbf{where}~\mathit{options} & \qquad \text{\color{black}Expressions}
 	\end{array}
 	\end{displaymath}
 	Modify the operational semantics and typing rules accordingly. \droppoints 
@@ -167,7 +188,9 @@ Note that this language only allows us to define custom data types and to constr
 \mathbf{data}~\mathit{Instr} = \mathit{ADD};~\mathit{PUSH}~\{~\mathit{valueToPush} : \mathbf{nat}~\};~\mathbf{in}~\mathit{valueToPush}~(\mathit{PUSH}~5)
 \end{displaymath}
 Show your modified abstract syntax, operational semantics, and typing rules. \droppoints 
-\question[4] Explain the difference between inheritance and subtyping. You are encouraged, but not required, to draw pictures of a bird and a duck to illustrate your answer. \droppoints 
+\question[2] Explain the difference between inheritance and subtyping. You are encouraged, but not required, to draw pictures of a bird and a duck to illustrate your answer. \droppoints 
+\question[5] Discuss how you would approach extending the language you defined for Question 2 with inheritance. \droppoints 
+\question[5] Discuss how you would approach extending the language you defined for either Question 2 or Question 4 with subtyping. \droppoints 
 
 \section*{Semantic Equivalence}
 
@@ -190,29 +213,30 @@ A program of form $\receive{x}{y}.P$ receives on a channel named $x$ and binds t
 \begin{mathpar}
 	\inferrule*[right=\color{black}E-SEND-RECEIVE]
 	{  }
-	{ \send{x}{z}.P \mid \receive{x}{y}.Q \to P \mid [y \mapsto z]Q }\\
-	\inferrule*[right=\color{black}E-CONC]
-	{ P \to Q }
-	{ P \mid R \to Q \mid R }\and
-	\inferrule*[right=\color{black}E-PLUS-RIGHT]
-	{ P \to Q }
-	{ \channel{x}P \to \channel{x}Q }
+	{ \send{x}{z}.P \mid \receive{x}{y}.Q \longrightarrow P \mid [y \mapsto z]Q }\\
+	\inferrule*[right=\color{black}E-CONC-LEFT]
+	{ P \longrightarrow Q }
+	{ P \mid R \longrightarrow Q \mid R }\and
+	\inferrule*[right=\color{black}E-CHANNEL]
+	{ P \longrightarrow Q }
+	{ \channel{x}P \longrightarrow \channel{x}Q }
 \end{mathpar}
-Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this purpose, we can define a function which calculates the free variables of a process:
-\begin{displaymath}
-\begin{array}{lcl}
-\mathit{fvs}(0) & = & \emptyset \\
-\mathit{fvs}(\send{a}{x}.P) & = & \set{a,x} \cup \mathit{fvs}(P) \\
-\mathit{fvs}(\receive{a}{x}.P) & = & \set{a} \cup (\mathit{fvs}(P) \setminus \set{x} ) \\
-\mathit{fvs}(P \mid Q) & = & \mathit{fvs}(P) \cup \mathit{fvs}(Q) \\
-\mathit{fvs}(\channel{a}.P) & = & \mathit{fvs}(P) \setminus \set{a} \\
-\mathit{fvs}(!P) & = & \mathit{fvs}(P)
-\end{array}
-\end{displaymath}
+%Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this purpose, we can define a function which calculates the free variables of a process:
+%\begin{displaymath}
+%\begin{array}{lcl}
+%\mathit{fvs}(0) & = & \emptyset \\
+%\mathit{fvs}(\send{a}{x}.P) & = & \set{a,x} %\cup \mathit{fvs}(P) \\
+%\mathit{fvs}(\receive{a}{x}.P) & = & \set{a} %\cup (\mathit{fvs}(P) \setminus \set{x} ) \\
+%\mathit{fvs}(P \mid Q) & = & \mathit{fvs}(P) %\cup \mathit{fvs}(Q) \\
+%\mathit{fvs}(\channel{a}.P) & = & %\mathit{fvs}(P) \setminus \set{a} \\
+%\mathit{fvs}(!P) & = & \mathit{fvs}(P)
+%\end{array}
+%\end{displaymath}
+These semantics do not include cases for all forms of terms in the $\pi$-calculus. This is not required because the remaining rules can be addressed by \emph{structural congruence}. We will use $\simeq$ to denote the structural congruence relation which we will define in the following exercises.
 \begin{parts}
-	\part[6] Give the definition of a function $\mathit{bound}$ which calculates the bound variables of a process. \droppoints 
-	\part[6] Define capture-avoiding substitution for the $\pi$-calculus. \droppoints 
-	\part[2] You may have noticed that the reduction semantics do not include cases for all forms of terms in the $\pi$-calculus. This is not required because it can be addressed by \emph{structural congruence}. We will use $\simeq$ to denote the structural congruence relation. For example, two processes are structurally congruent if they are identical up to $\alpha$-conversion (\emph{i.e.} identical up to structure). Express this fact for two arbitrary processes $P$ and $Q$. \droppoints
+	%\part[6] Give the definition of a function $\mathit{bound}$ which calculates the bound variables of a process. \droppoints 
+	%\part[6] Define capture-avoiding substitution for the $\pi$-calculus. \droppoints 
+	\part[2] Two processes $P$ and $Q$ are structurally congruent if they are identical up to $\alpha$-conversion (\emph{i.e.} identical up to renaming). Extend the structural congruence relation $\simeq$ with this property. \droppoints
 	\part[3] Parallel composition (\emph{e.g.} $P \mid Q$) is commutative, associative, and has a unit. Extend the structural congruence relation $\simeq$ with these three properties. \droppoints 
 	\part Additionally, there are the following axioms:
 	\begin{displaymath}
@@ -226,7 +250,7 @@ Just like in the $\lambda$-calculus, substitution is capture-avoiding. For this 
 	For each of the following pairs of processes, decide whether they are structurally congruent.
 	\begin{subparts}
 	\subpart[1] $0 \overset{?}{\simeq} \channel{x}0$ \droppoints 
-	\subpart[1] $Q\mid !P \overset{?}{\simeq} !P$ \droppoints 
+	\subpart[1] $Q \mid~!P \overset{?}{\simeq}~ !P$ \droppoints 
 	\subpart[1] $\channel{x}\channel{y}(P \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}(Q \mid P \mid \channel{z}0)$ \droppoints
 	\subpart[1] $\channel{x}\channel{y}(\send{y}{i} \mid Q) \overset{?}{\simeq} \channel{y}\channel{x}Q \mid (\send{y}{i} \mid \channel{z}0)$ \droppoints
 	\end{subparts}
