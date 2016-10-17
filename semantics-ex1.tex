@@ -222,7 +222,7 @@ We know that a well-formed expression will either evaluate to a natural number o
 %\end{displaymath}
 \newcommand{\metavar}[1]{{\color{campurple}#1}}
 \begin{parts}
-\part[5] Define a binary typing relation $ \vdash e : \tau$ for our simple expression language using a system of type inference rules of form:
+\part[5] Define a binary typing relation $ \vdash e : \tau$ for our simple expression language using a system of type inference rules (or \emph{proof rules}) of form:
 \begin{mathpar}
     \inferrule*[right=\color{black}T-NAME]
     { assumption_0 \\ \ldots \\ assumption_n }
@@ -239,13 +239,14 @@ cannot be well-typed. \droppoints
 \end{itemize} 
 Answer the following questions about type checking and type inference: 
 \begin{subparts}
-\subpart[4] Discuss to what extent your typing judgements address these problems. \droppoints
-\subpart[4] Suggest how the problem of type checking could be reduced to type inference. What assumptions do you need to make about your types? \droppoints  
+\subpart[1] What is a decision procedure?
+\subpart[4] Discuss whether your typing judgements are a decision procedure for either type checking or type inference. \droppoints
+\subpart[4] Suppose that you have an implementation of a type inference algorithm for some language that can be called on a context $\Gamma$ and an expression $e$ by invoking $\mathit{infer}(\Gamma, e)$ to return a type $\tau$. Suggest how you could implement a type checking algorithm $\mathit{check}(\Gamma, e, \tau)$ with the help of $\mathit{infer}$. What assumptions do you need to make about your types? \droppoints  
 \end{subparts} 
-\part[6] Turn your typing judgements into an algorithm for type inference and implement it in a language of your choice, but not ML\footnote{Last year I received some particularly elegant solutions in Haskell and Prolog.}. \droppoints 
+\part[6] Using the typing judgements you gave as an answer for a previous part of this question, implement an algorithm for type inference in a language of your choice, but not ML\footnote{In previous years I received some particularly elegant solutions in Haskell and Prolog.}. \droppoints 
 \part[6] Translate the denotational semantics shown above into an operational semantics. Discuss how your answer compares with the denotational semantics. \droppoints
-\part[10] Suppose that we want to allow each branch of a conditional expression to return a different type. Discuss how this could be implemented in the type system. Justify your decisions and describe all changes you would make to the types and the typing rules. \droppoints
-\part[10] Can you come up with a type system for which type inference is undecidable, but type checking is decidable? This question is particularly difficult and you should not spend too much time on it. \droppoints 
+\part Suppose that we want to allow each branch of a conditional expression to return a different type. Discuss how this could be implemented in the type system. Justify your decisions and describe all changes you would make to the types and the typing rules. \droppoints
+\part Can you come up with a type system for which type inference is undecidable, but type checking is decidable? This question is particularly difficult and you should not spend too much time on it. \droppoints 
 \end{parts}
 \end{questions}
 \end{document}
