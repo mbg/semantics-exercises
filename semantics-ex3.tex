@@ -15,6 +15,7 @@
 \usepackage{geometry}
 \usepackage{everysel}
 \usepackage[normalem]{ulem}
+\usepackage{microtype}
 
 \tikzset{
   treenode/.style = {align=center, inner sep=0pt, text centered,
@@ -85,8 +86,8 @@
 \newcommand{\week}{III}
 \newcommand{\topics}{Data, Subtyping \& Objects, Semantic Equivalence, and Concurrency}
 
-\everymath{\color{campurpledark}}
-\everydisplay{\color{campurpledark}}
+%\everymath{\color{campurpledark}}
+%\everydisplay{\color{campurpledark}}
 
 %\vspace{15pt}
 
@@ -114,10 +115,66 @@
 
 \vspace{0.5cm}
 
+This supervision work covers the remaining topics in the Semantics of Programming Languages course: data, subtyping \& objects, concurrency, and semantic equivalence.
+
 \begin{questions}
 
-\section*{Data}
-\question You are given the following definition for the abstract syntax of a small, functional programming language with data types. $\mathbb{D}$ is the set of data types and $\mathbb{C}$ is the set of data constructors -- we will explain what they are later on.
+\section*{Curry-Howard}
+\question Consider the following, context-free grammar for a language based on $\lambda$-calculus:
+\begin{displaymath}
+\begin{array}{lcl}
+e & ::= & x \mid (e,e) \mid \mathbf{inl}~e \mid \mathbf{inr}~e \mid \lambda x : \tau.e \mid (e~e) \mid \mathbf{fst}~e \mid \mathbf{snd}~e \mid \mathbf{case}~e~\mathbf{of}~\{\mathbf{inl}~x \to e\}~\{\mathbf{inr}~x \to e\}
+\end{array}
+\end{displaymath}
+Assume that this language has the ``usual'' semantics:
+\begin{itemize}
+\item $\beta$-reduction, \emph{e.g.}: $(\lambda x : \tau.x)~y \longrightarrow y$
+\item $\mathbf{fst}$ and $\mathbf{snd}$ extract components from a pair, \emph{e.g.}: $\mathbf{fst}~(x,y) \longrightarrow x$
+\item $\mathbf{case}$ chooses a case alternative with a left-hand side matching the value it is examining and binds the inner term to a variable, \emph{e.g.}: $\mathbf{case}~(\mathbf{inl}~a)~\mathbf{of}~\{~\mathbf{inl}~x \to~x\}~\{\mathbf{inr}~y \to b\} \longrightarrow a$
+\end{itemize}
+\begin{parts}
+\part[8] Give suitable typing judgements for this language where types have the syntax of propositional logic: $P$ and $Q$ are base types, $\tau \Rightarrow \tau$ is used as a function type, $\tau \wedge \tau$ represents products types (pairs), and $\tau \vee \tau$ represents sum types (disjoint unions):
+\begin{displaymath}
+\begin{array}{lcl}
+\tau & ::= & P \mid Q \mid \tau \Rightarrow \tau \mid \tau \wedge \tau \mid \tau \vee \tau
+\end{array} 
+\end{displaymath}\droppoints
+\part[2] Does every term in this language have a unique type? Explain your answer. \droppoints 
+\part For each of the following propositions given as types of the above language, prove the proposition by specifying a suitable expression in the language above.
+\begin{subparts}
+\subpart[1] $P \Rightarrow P$ \droppoints
+\subpart[1] $(P \Rightarrow Q) \Rightarrow P \Rightarrow Q$ \droppoints
+\subpart[1] $P \Rightarrow Q \Rightarrow P \wedge Q$ \droppoints
+\subpart[1] $(P \Rightarrow Q, P) \Rightarrow Q$ \droppoints 
+\subpart[1] $(Q \vee (P \Rightarrow Q)) \Rightarrow P \Rightarrow Q$ \droppoints 
+\end{subparts}
+\end{parts}
+
+\section*{Semantic Equivalence}
+
+\question[2] Someone proposes that ``in \emph{total} programming languages, all terms of the same type are semantically-equivalent'' -- do you agree? Justify your answer. \droppoints
+\question[2] Someone proposes that ``in \emph{pure} programming languages, all terms of the same type are semantically-equivalent'' -- do you agree? Justify your answer. \droppoints
+\question Suppose that the language from Question 1 is extended with a way to read a character from the terminal/user input:
+\begin{displaymath}
+\begin{array}{lcl}
+e & ::= & \ldots \mid \mathbf{getch}
+\end{array}
+\end{displaymath}
+In other words, the value of $\mathbf{getch}$ corresponds to whichever key the user presses next once $\mathbf{getch}$ is being evaluated. Someone proposes that a compiler for the above language can perform some optimisations:
+\begin{center}
+\begin{tabular}{ccc}
+ expression & simplifies to & expression \\ \hline 
+ $(\mathbf{fst}~e, \mathbf{snd}~e)$ & $\rightsquigarrow$ & $e$ \\ 
+ $\mathbf{fst}~(e_1,e_2)$ & $\rightsquigarrow$ & $e_1$ \\ 
+ $\mathbf{snd}~(e_1,e_2)$ & $\rightsquigarrow$ & $e_2$ \\ 
+\end{tabular} 
+\end{center}
+\begin{parts}
+\part[2] Are these optimisations always semantically-equivalent? Justify your answer. \droppoints
+\part[5] Discuss how you could implement these rules in light of your answer to the previous question. \droppoints
+\end{parts}
+\section*{Data \& Records}
+\question You are given the following definition for the abstract syntax of a small, functional programming language with data types. $\mathbb{D}$ is the set of data type names and $\mathbb{C}$ is the set of data constructor names:
 \begin{displaymath}
 \begin{array}{cccc}
 D \in \mathbb{D} &
@@ -129,10 +186,12 @@ b \in \mathbb{B}
 \begin{displaymath}
 \begin{array}{lcll}
 \tau & = & \mathbf{nat} \mid \mathbf{bool} \mid D \mid \tau \to \tau & \qquad \text{\color{black}Types}\\
-\mathit{ctr} & = & C~\tau^*; & \qquad \text{\color{black}Data constructors}\\
+\mathit{ctr} & = & C~\tau^*; & \qquad \text{\color{black}Data constructor}\\
 p & = & \mathbf{data}~D = \mathit{ctr}^+~\mathbf{in}~p \mid e & \qquad \text{\color{black}Programs}\\
 e & = & \lambda x : \tau.e \mid e~e \mid x \mid l & \qquad \text{\color{black}Expressions} \\
-l & = & n \mid b \mid C~e^* & \qquad \text{\color{black}Literals}
+l & = & n & \qquad \text{Natural number}\\
+ & \mid & b & \qquad \text{Boolean} \\
+ & \mid & C~e^* & \qquad \text{\color{black}Constructor application}
 \end{array}
 \end{displaymath}
 We use postfix, superscript + and * to mean ``one or more'' and ``zero or more'' respectively. For example, valid data constructors are:
@@ -160,7 +219,7 @@ We impose the following restrictions on data types: data types may not be recurs
 \begin{parts}
     \part[6] Complete the operational semantics for this language by extending $\longrightarrow_p$ and $\longrightarrow_e$ with suitable transition rules. \droppoints 
 	\part[6] Specify suitable typing rules for this language. Data constructors construct values of their respective data type. If they have no parameters, then they are simply values of that type or, if parametrised, then they are \emph{curried} functions from values of their parameter types to one of their respective data type. For example: $\mathit{ADD} : \mathit{Instr}$ and $\mathit{PUSH} : \mathbf{nat} \to \mathit{Instr}$. \droppoints 
-	\part[2] Suppose that you want to write a pre-processor for your language which takes data type declarations in an \emph{arbitrary} order and re-orders them in order of dependency to fulfil the restriction stated above. For example, if the pre-processor is given
+	\part[2] Suppose that you want to write a pre-processor for your language which takes data type declarations in an \emph{arbitrary} order and re-orders them in order of dependency to meet the restriction stated above. For example, if the pre-processor is given
     \begin{displaymath}
     \mathbf{data}~\mathit{Foo} = \mathit{MkFoo}~\mathit{Bar};~ \mathbf{in}~\mathbf{data}~\mathit{Bar} = \mathit{MkBar};~\mathbf{in}~p
     \end{displaymath}
@@ -168,8 +227,7 @@ We impose the following restrictions on data types: data types may not be recurs
     \begin{displaymath}
     \mathbf{data}~\mathit{Bar} = \mathit{MkBar};~\mathbf{in}~\mathbf{data}~\mathit{Foo} = \mathit{MkFoo}~\mathit{Bar};~ \mathbf{in}~p
     \end{displaymath}
-    since the definition of $\mathit{Foo}$ depends on $\mathit{Bar}$. Propose an algorithm for this purpose.
-    \emph{Hint}: Think back to Part 1A Algorithms. \droppoints 
+    since the definition of $\mathit{Foo}$ depends on $\mathit{Bar}$. Propose an algorithm for this purpose. \droppoints 
 	\part[6] Suppose we wish to extend this language with case expressions and pattern matching:
 	\begin{displaymath}
 	\begin{array}{lcll}
@@ -183,16 +241,16 @@ We impose the following restrictions on data types: data types may not be recurs
 
 \section*{Subtyping \& Objects}
 
-\question[10] Extend data types in the language from the previous section with records. It should be possible to specify labels for the parameters of data constructors and to extract values from records using the labels. For example:
+\question[10] Extend data types in the language from the previous question with records. It should be possible to specify labels for the parameters of data constructors and to extract values from records using the labels. For example:
 \begin{displaymath}
 \mathbf{data}~\mathit{Instr} = \mathit{ADD};~\mathit{PUSH}~\{~\mathit{valueToPush} : \mathbf{nat}~\};~\mathbf{in}~\mathit{valueToPush}~(\mathit{PUSH}~5)
 \end{displaymath}
 Show your modified abstract syntax, operational semantics, and typing rules. \droppoints 
-\question[2] Explain the difference between inheritance and subtyping. You are encouraged, but not required, to draw pictures of a bird and a duck to illustrate your answer. \droppoints 
-\question[5] Discuss how you would approach extending the language you defined for Question 2 with inheritance. \droppoints 
-\question[5] Discuss how you would approach extending the language you defined for either Question 2 or Question 4 with subtyping. \droppoints 
+\question[2] Explain the difference between inheritance and subtyping. \droppoints 
+%\question[5] Discuss how you would approach extending the language you defined for Question 2 with inheritance. \droppoints 
+%\question[5] Discuss how you would approach extending the language you defined for either Question 2 or Question 4 with subtyping. \droppoints 
 
-\section*{Semantic Equivalence}
+\section*{Concurrency}
 
 \newcommand{\receive}[2]{#1(#2)}
 \newcommand{\send}[2]{\overline{#1}\langle #2 \rangle}
@@ -209,12 +267,12 @@ P & \to & \receive{x}{y}.P\\
   & \mid & 0
 \end{array}
 \end{displaymath}
-A program of form $\receive{x}{y}.P$ receives on a channel named $x$ and binds the resulting value to $y$ in $P$. $\send{x}{y}.P$ sends a value $y$ over channel $x$ and then continues with $P$. $P \mid Q$ runs $P$ and $Q$ concurrently. $\channel{x}P$ creates a channel named $x$ and then runs $P$. $!P$ repeatedly spawns copies of $P$. $0$ terminates a process. Formally, the reduction semantics of this calculus are:
+A program of form $\receive{x}{y}.P$ receives on a channel named $x$ and binds the resulting value to $y$ in $P$. $\send{x}{y}.P$ sends a value $y$ over channel $x$ and then continues with $P$. $P \mid Q$ runs $P$ and $Q$ concurrently. $\channel{x}P$ creates a channel named $x$ and then runs $P$. $!P$ repeatedly spawns copies of $P$. $0$ terminates a process. Formally, the semantics of this calculus are:
 \begin{mathpar}
 	\inferrule*[right=\color{black}E-SEND-RECEIVE]
 	{  }
 	{ \send{x}{z}.P \mid \receive{x}{y}.Q \longrightarrow P \mid [y \mapsto z]Q }\\
-	\inferrule*[right=\color{black}E-CONC-LEFT]
+	\inferrule*[right=\color{black}E-PAR-COMP]
 	{ P \longrightarrow Q }
 	{ P \mid R \longrightarrow Q \mid R }\and
 	\inferrule*[right=\color{black}E-CHANNEL]
@@ -232,12 +290,16 @@ A program of form $\receive{x}{y}.P$ receives on a channel named $x$ and binds t
 %\mathit{fvs}(!P) & = & \mathit{fvs}(P)
 %\end{array}
 %\end{displaymath}
-These semantics do not include cases for all forms of terms in the $\pi$-calculus. This is not required because the remaining rules can be addressed by \emph{structural congruence}. We will use $\simeq$ to denote the structural congruence relation which we will define in the following exercises.
+These reduction rules are by themselves not sufficient to reason about $\pi$-calculus terms. We also need a notion of equivalence between $\pi$-calculus terms. We will use $\simeq$ to denote this equivalence. To start off, two processes $P$ and $Q$ are equivalent if they are identical up to $\alpha$-conversion (\emph{i.e.} identical up to renaming):
+\begin{displaymath}
+\begin{array}{lcll}
+P & \simeq & Q & \text{if $Q$ can be obtained from $P$ by renaming one or more bound names in $P$}
+\end{array}
+\end{displaymath}
 \begin{parts}
 	%\part[6] Give the definition of a function $\mathit{bound}$ which calculates the bound variables of a process. \droppoints 
 	%\part[6] Define capture-avoiding substitution for the $\pi$-calculus. \droppoints 
-	\part[2] Two processes $P$ and $Q$ are structurally congruent if they are identical up to $\alpha$-conversion (\emph{i.e.} identical up to renaming). Extend the structural congruence relation $\simeq$ with this property. \droppoints
-	\part[3] Parallel composition (\emph{e.g.} $P \mid Q$) is commutative, associative, and has a unit. Extend the structural congruence relation $\simeq$ with these three properties. \droppoints 
+	\part[3] Parallel composition (\emph{i.e.} $P \mid Q$) is commutative, associative, and has a unit ($0$). Extend the equivalence relation $\simeq$ with these three properties. \droppoints 
 	\part Additionally, there are the following axioms:
 	\begin{displaymath}
 	\begin{array}{lcll}
@@ -247,7 +309,7 @@ These semantics do not include cases for all forms of terms in the $\pi$-calculu
 	\channel{x}(P \mid Q) & \simeq & \channel{x}P \mid Q & \text{if $x \not \in \mathit{fvs}(Q)$}
 	\end{array}
 	\end{displaymath}
-	For each of the following pairs of processes, decide whether they are structurally congruent.
+	For each of the following pairs of processes, decide whether they are equivalent:
 	\begin{subparts}
 	\subpart[1] $0 \overset{?}{\simeq} \channel{x}0$ \droppoints 
 	\subpart[1] $Q \mid~!P \overset{?}{\simeq}~ !P$ \droppoints 
@@ -256,12 +318,12 @@ These semantics do not include cases for all forms of terms in the $\pi$-calculu
 	\end{subparts}
 \end{parts}
 
-\section*{Concurrency}
-
-\question[1] Can you give an example of a process which results in deadlock? If not, why? \droppoints
-\question[2] What happens if one process sends on a channel $x$ while two or more other processes are waiting to receive on channel $x$? Use an example process to illustrate your answer. \emph{Hint}: you are allowed to use the structural congruence relation as part of a reduction sequence. \droppoints
+\question[1] Can you give an example of a process in the $\pi$-calculus which results in deadlock? If not, why? \droppoints
+\question[2] What happens if one process sends on a channel $x$ while two or more other processes are waiting to receive on channel $x$? Use an example process to illustrate your answer. \emph{Hint}: you are allowed to use the equivalence relation as part of a reduction sequence. \droppoints
 \question[2] Is the $\pi$-calculus deterministic? Illustrate your answer with either a counter-example or a proof. \droppoints 
 %\question[5] Discuss how you might go about implementing mutual exclusion in the $\pi$-calculus. \droppoints 
+
+
 
 \end{questions}
 \end{document}
